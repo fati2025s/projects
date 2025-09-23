@@ -97,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -376,11 +384,27 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  simple_shadow:
+    dependency: "direct main"
+    description:
+      name: simple_shadow
+      sha256: "0c0872b2baffaf12fc91416643785a88081120bac61d704f3f9dbd7e712360fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   sky_engine:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+  sleek_circular_slider:
+    dependency: "direct main"
+    description:
+      name: sleek_circular_slider
+      sha256: "89c7d0d37befc9818a2b53ef6ff126c43b70485dabb189b734d46106db190931"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   source_span:
     dependency: transitive
     description:
@@ -413,6 +437,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  stroke_text:
+    dependency: "direct main"
+    description:
+      name: stroke_text
+      sha256: "783fee071e3a3c5d3fe24011d7d776ce3cd64792e01b650c6b727ac3f38cb37b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   term_glyph:
     dependency: transitive
     description:
@@ -429,6 +461,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
+  tn_bottom_sheet_navigator:
+    dependency: "direct main"
+    description:
+      name: tn_bottom_sheet_navigator
+      sha256: "04a156c1c697469446372e28b3f8a17d19b4813ede6f621e36a54b0773189bd1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.11"
   typed_data:
     dependency: transitive
     description:
