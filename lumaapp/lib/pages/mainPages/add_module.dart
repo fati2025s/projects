@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:lumaapp/pages/modulePages/location_page.dart';
 //import '../../widgets/QR_Scannercode.dart';
+import '../../l10n/app_localizations.dart';
 import '/utils.dart' as utils;
 //import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter/services.dart';
@@ -39,20 +41,22 @@ Future<List<LocationModel>> fetchLocationModels() async {
   }
 }
 
-class AddLocationOrProduct extends StatefulWidget {
-  const AddLocationOrProduct({super.key});
+class AddProduct extends StatefulWidget {
+  final String mobileNumber;
+  final Locationcard;
+  const AddProduct({super.key, required this.Locationcard, required this.mobileNumber});
 
   @override
-  State<AddLocationOrProduct> createState() => _AddLocationOrProductState();
+  State<AddProduct> createState() => _AddLocationOrProductState();
 }
 
-class _AddLocationOrProductState extends State<AddLocationOrProduct> {
-  String addDropdownButtonValue = 'محل قرارگیری محصول';
-  String addLocationDropdownButtonValue = 'BedRoom';
+class _AddLocationOrProductState extends State<AddProduct> {
+  String addDropdownButtonValue = 'محصول ماژول روشنایی (لومسی)';
   int? locationIdDropdownButtonValue;
   late Future<List<LocationModel>> futureLocationModels;
   TextEditingController textEditingController1 = TextEditingController();
   TextEditingController textEditingController2 = TextEditingController();
+  String locationcardname = "";
 
   Future<void> addLumakeyModule() async {
     final url = Uri.parse('${utils.serverAddress}/products/lumakey/active');
@@ -65,7 +69,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
       body: jsonEncode({
         "slug": textEditingController1.text,
         "active_code": textEditingController2.text,
-        "location_id": locationIdDropdownButtonValue,
+        "location_id": widget.Locationcard.location,
       }),
     );
     if (response.statusCode == 200) {
@@ -101,16 +105,16 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                     height: MediaQuery.of(context).size.height * 0.060,
                     decoration: BoxDecoration(
                         gradient: const LinearGradient(colors: [
-                          Color(0xFF1D1A39),
-                          Color(0xFF451952)
+                          Color(0xFF004508),
+                          Color(0xFF47FF5C)
                         ]),
                         borderRadius:
                         BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
                         border: Border.all(
-                            color: const Color(0xFF0200C9), width: 2),
+                            color: const Color(0xFF0008AB), width: 2),
                         boxShadow: [
                           BoxShadow(
-                              color: const Color(0xFF0200C9)
+                              color: const Color(0xFF0008AB)
                                   .withOpacity(0.15),
                               offset: const Offset(4, 4),
                               blurRadius: 20,
@@ -120,7 +124,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       child: Text(
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.center,
-                        "تایید",
+                        AppLocalizations.of(context)!.taiid,
                         style: TextStyle(
                           color: const Color(0xFFE8BCB9),
                           fontSize: MediaQuery.of(context).size.width * 0.053,
@@ -130,7 +134,6 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                     ),
                   ),
                   /*onTap: () => Navigator.pushAndRemoveUntil(
-                    //todo
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AppBarPage(),
@@ -144,7 +147,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
         ),
       );
     } else {
-      throw Exception('Failed to add lumakeyModule');
+      throw Exception(AppLocalizations.of(context)!.error4);
     }
   }
 
@@ -159,7 +162,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
       body: jsonEncode({
         "slug": textEditingController1.text,
         "active_code": textEditingController2.text,
-        "location_id": locationIdDropdownButtonValue,
+        "location_id": widget.Locationcard.id,
       }),
     );
     if (response.statusCode == 200) {
@@ -195,16 +198,16 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                     height: MediaQuery.of(context).size.height * 0.060,
                     decoration: BoxDecoration(
                         gradient: const LinearGradient(colors: [
-                          Color(0xFF1D1A39),
-                          Color(0xFF451952)
+                          Color(0xFF004508),
+                          Color(0xFF47FF5C)
                         ]),
                         borderRadius:
                         BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
                         border: Border.all(
-                            color: const Color(0xFF0200C9), width: 2),
+                            color: const Color(0xFF0008AB), width: 2),
                         boxShadow: [
                           BoxShadow(
-                              color: const Color(0xFF0200C9)
+                              color: const Color(0xFF0008AB)
                                   .withOpacity(0.15),
                               offset: const Offset(4, 4),
                               blurRadius: 20,
@@ -214,7 +217,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       child: Text(
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.center,
-                        "تایید",
+                        AppLocalizations.of(context)!.taiid,
                         style: TextStyle(
                           color: const Color(0xFFE8BCB9),
                           fontSize: MediaQuery.of(context).size.width * 0.053,
@@ -223,13 +226,13 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       ),
                     ),
                   ),
-                  /*onTap: () => Navigator.pushAndRemoveUntil(
+                  onTap: () => Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AppBarPage(),
+                      builder: (context) => LocationPage(locationcard: widget.Locationcard, mobileNumber: widget.mobileNumber),
                     ),
                         (route) => false,
-                  ),*/
+                  ),
                 ),
               ],
             ),
@@ -237,7 +240,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
         ),
       );
     } else {
-      throw Exception('Failed to add lumcyModule');
+      throw Exception(AppLocalizations.of(context)!.error5);
     }
   }
 
@@ -251,7 +254,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
       },
       body: jsonEncode({
         "name": textEditingController1.text,
-        "location": addLocationDropdownButtonValue,
+        "location": widget.Locationcard.location,
       }),
     );
     if (response.statusCode == 200) {
@@ -287,16 +290,16 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                     height: MediaQuery.of(context).size.height * 0.060,
                     decoration: BoxDecoration(
                         gradient: const LinearGradient(colors: [
-                          Color(0xFF1D1A39),
-                          Color(0xFF451952)
+                          Color(0xFF004508),
+                          Color(0xFF47FF5C)
                         ]),
                         borderRadius:
                         BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
                         border: Border.all(
-                            color: const Color(0xFF0200C9), width: 2),
+                            color: const Color(0xFF0008AB), width: 2),
                         boxShadow: [
                           BoxShadow(
-                              color: const Color(0xFF0200C9)
+                              color: const Color(0xFF0008AB)
                                   .withOpacity(0.15),
                               offset: const Offset(4, 4),
                               blurRadius: 20,
@@ -306,7 +309,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       child: Text(
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.center,
-                        "تایید",
+                        AppLocalizations.of(context)!.taiid,
                         style: TextStyle(
                           color: const Color(0xFFE8BCB9),
                           fontSize: MediaQuery.of(context).size.width * 0.053,
@@ -329,7 +332,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
         ),
       );
     } else {
-      throw Exception('Failed to add location');
+      throw Exception(AppLocalizations.of(context)!.error3);
     }
   }
 
@@ -370,7 +373,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
       resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
-            color: const Color(0xFFD9D9D9),
+            color: const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
             boxShadow: [
               BoxShadow(
@@ -390,7 +393,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                 children: [
                   SizedBox(width: size.width * 0.063),
                   Text(
-                    "اضافه کنید...",
+                    AppLocalizations.of(context)!.add,
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
                     style: TextStyle(
@@ -414,7 +417,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       textDirection: TextDirection.rtl,
                       children: [
                         Text(
-                          "چی میخوای اضافه کنی؟",
+                          AppLocalizations.of(context)!.add1,
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right,
                           style: TextStyle(
@@ -451,38 +454,28 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                           padding: EdgeInsets.only(right: size.width * 0.050),
                           iconSize: 30,
                           dropdownColor: const Color(0xFFD9D9D9),
-                          iconDisabledColor: const Color(0xFF0200C9),
-                          iconEnabledColor: const Color(0xFF0200C9),
+                          iconDisabledColor: const Color(0xFF0008AB),
+                          iconEnabledColor: const Color(0xFF0008AB),
                           isExpanded: true,
                           alignment: Alignment.centerRight,
                           value: addDropdownButtonValue,
-                          items: const [
+                          items: [
                             DropdownMenuItem(
-                              value: 'محل قرارگیری محصول',
+                              value: AppLocalizations.of(context)!.lamp,
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  'محل قرارگیری محصول',
+                                  AppLocalizations.of(context)!.lamp,
                                   textAlign: TextAlign.right,
                                 ),
                               ),
                             ),
                             DropdownMenuItem(
-                              value: 'محصول ماژول روشنایی (لومسی)',
+                              value: AppLocalizations.of(context)!.coler,
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  'محصول ماژول روشنایی (لومسی)',
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'محصول ماژول کولر (لوماکی)',
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  'محصول ماژول کولر (لوماکی)',
+                                  AppLocalizations.of(context)!.coler,
                                   textAlign: TextAlign.right,
                                 ),
                               ),
@@ -499,16 +492,15 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                         ),
                       ),
                     ),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول') SizedBox(height: size.height * 0.036),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول')
+                    SizedBox(height: size.height * 0.02),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         textDirection: TextDirection.rtl,
                         children: [
                           Text(
-                            (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)')
-                                ? 'محل قرارگیری ماژول لومسی:'
-                                : 'محل قرارگیری ماژول لوماکی:',
+                            (addDropdownButtonValue == AppLocalizations.of(context)!.lamp)
+                                ? AppLocalizations.of(context)!.lamp1
+                                : AppLocalizations.of(context)!.coler1,
                             textDirection: TextDirection.rtl,
                             textAlign: TextAlign.right,
                             style: TextStyle(
@@ -519,90 +511,35 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                           ),
                         ],
                       ),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول') SizedBox(height: size.height * 0.006),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول')
-                      FutureBuilder<List<LocationModel>>(
-                        future: futureLocationModels,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          } else {
-                            final locationModels = snapshot.data!;
-                            if (locationIdDropdownButtonValue == null && locationModels.isNotEmpty) {
-                              locationIdDropdownButtonValue = locationModels.first.id;
-                            }
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD9D9D9),
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF000000).withOpacity(0.5),
-                                    offset: const Offset(4, 4),
-                                    blurRadius: 4,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
-                              ),
-                              child: Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: DropdownButton<int>(
-                                  style: TextStyle(
-                                    color: const Color(0xFF000000),
-                                    fontFamily: "Sans",
-                                    fontSize: size.width * 0.020,
-                                  ),
-                                  borderRadius: BorderRadius.circular(5),
-                                  padding: EdgeInsets.only(right: size.width * 0.050),
-                                  iconSize: 30,
-                                  dropdownColor: const Color(0xFFD9D9D9),
-                                  iconDisabledColor: const Color(0xFF0200C9),
-                                  iconEnabledColor: const Color(0xFF0200C9),
-                                  isExpanded: true,
-                                  alignment: Alignment.centerRight,
-                                  value: locationIdDropdownButtonValue,
-                                  items: locationModels.map((location) {
-                                    return DropdownMenuItem<int>(
-                                      value: location.id,
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Text(
-                                          location.name,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  underline: const SizedBox.shrink(),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      locationIdDropdownButtonValue = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                    SizedBox(height: size.height * 0.01),
+                    Text(
+                      "${widget.Locationcard.location}",
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: const Color(0xFF1D1A39),
+                        fontFamily: "Sans",
+                        fontSize: size.width * 0.033,
                       ),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول') SizedBox(height: size.height * 0.036),
-                    if (addDropdownButtonValue != 'محل قرارگیری محصول') GestureDetector(
+                    ),
+
+
+                    SizedBox(height: size.height * 0.03),
+                    GestureDetector(
                       child: Container(
                         width: size.width * 0.313,
                         height: size.height * 0.030,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                              colors: [Color(0xFF1D1A39), Color(0xFF451952)]),
+                              colors: [Color(0xFF004508), Color(0xFF47FF5C)]),
                           borderRadius: BorderRadius.circular(size.width * 0.083),
-                          border: Border.all(color: const Color(0xFF0200C9), width: 1),
+                          border: Border.all(color: const Color(0xFF0008AB), width: 1),
                         ),
                         child: Center(
                           child: Text(
                             textDirection: TextDirection.rtl,
                             textAlign: TextAlign.center,
-                            "اطلاعات را اسکن کنید!",
+                            AppLocalizations.of(context)!.scan,
                             style: TextStyle(
                               color: const Color(0xFFE8BCB9),
                               fontSize: size.width * 0.025,
@@ -619,11 +556,10 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       textDirection: TextDirection.rtl,
                       children: [
                         Text(
-                          (addDropdownButtonValue == 'محل قرارگیری محصول')
-                              ? 'نام محل قرارگیری محصول:'
-                              : (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)')
-                              ? 'شناسه ماژول لومسی:'
-                              : 'شناسه ماژول لوماکی:',
+                          (addDropdownButtonValue == AppLocalizations.of(context)!.lamp)
+                          ? AppLocalizations.of(context)!.lamp2
+                            : AppLocalizations.of(context)!.coler2,
+
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right,
                           style: TextStyle(
@@ -642,11 +578,10 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                           border: const UnderlineInputBorder(),
                           filled: false,
                           alignLabelWithHint: true,
-                          hintText: (addDropdownButtonValue == 'محل قرارگیری محصول')
-                              ? 'لطفا محل قرارگیری محصول را وارد کنید.'
-                              : (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)')
-                              ? 'لطفا شناسه ماژول لومسی خود را وارد کنید.'
-                              : 'لطفا شناسه ماژول لوماکی خود را وارد کنید.',
+                          hintText: (addDropdownButtonValue == AppLocalizations.of(context)!.lamp)
+                              ? AppLocalizations.of(context)!.lamp3
+                              : AppLocalizations.of(context)!.coler3,
+
                           hintTextDirection: TextDirection.rtl,
                           hintStyle: TextStyle(
                               fontSize: size.width * 0.025,
@@ -659,11 +594,10 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                       textDirection: TextDirection.rtl,
                       children: [
                         Text(
-                          (addDropdownButtonValue == 'محل قرارگیری محصول')
-                              ? 'نوع محل قرارگیری محصول:'
-                              : (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)')
-                              ? 'کد فعالسازی ماژول لومسی:'
-                              : 'کد فعالسازی ماژول لوماکی:',
+                          (addDropdownButtonValue == AppLocalizations.of(context)!.lamp)
+                              ? AppLocalizations.of(context)!.lamp4
+                              : AppLocalizations.of(context)!.coler4,
+
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right,
                           style: TextStyle(
@@ -674,92 +608,6 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                         ),
                       ],
                     ),
-                    if (addDropdownButtonValue == 'محل قرارگیری محصول') SizedBox(height: size.height * 0.006),
-                    if (addDropdownButtonValue == 'محل قرارگیری محصول')
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9D9D9),
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF000000).withOpacity(0.5),
-                              offset: const Offset(4, 4),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: DropdownButton<String>(
-                            style: TextStyle(
-                              color: const Color(0xFF000000),
-                              fontFamily: "Sans",
-                              fontSize: size.width * 0.020,
-                            ),
-                            borderRadius: BorderRadius.circular(5),
-                            padding: EdgeInsets.only(right: size.width * 0.050),
-                            iconSize: 30,
-                            dropdownColor: const Color(0xFFD9D9D9),
-                            iconDisabledColor: const Color(0xFF0200C9),
-                            iconEnabledColor: const Color(0xFF0200C9),
-                            isExpanded: true,
-                            alignment: Alignment.centerRight,
-                            value: addLocationDropdownButtonValue,
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'BedRoom',
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'اتاق خواب',
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 'BathRoom',
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'سرویس بهداشتی',
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Kitchen',
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'آشپزخانه',
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Hall',
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'سالن پذیرایی',
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ),
-                            ],
-                            underline: const SizedBox.shrink(),
-                            onChanged: (newValue) {
-                              if (newValue != null) {
-                                setState(() {
-                                  addLocationDropdownButtonValue = newValue;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      )
-                    else
                       TextFormField(
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
@@ -768,9 +616,9 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                             border: const UnderlineInputBorder(),
                             filled: false,
                             alignLabelWithHint: true,
-                            hintText: (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)')
-                                ? 'لطفا کد فعالسازی ماژول لومسی خود را وارد کنید.'
-                                : 'لطفا کد فعالسازی ماژول لوماکی خود را وارد کنید.',
+                            hintText: (addDropdownButtonValue == AppLocalizations.of(context)!.lamp)
+                                ? AppLocalizations.of(context)!.lamp5
+                                : AppLocalizations.of(context)!.coler5,
                             hintTextDirection: TextDirection.rtl,
                             hintStyle: TextStyle(
                                 fontSize: size.width * 0.025,
@@ -783,12 +631,12 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                         width: size.width * 0.750,
                         height: size.height * 0.079,
                         decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [Color(0xFF18401B), Color(0xFF70FF83)]),
+                            gradient: const LinearGradient(colors: [Color(0xFF004508), Color(0xFF47FF5C)]),
                             borderRadius: BorderRadius.circular(size.width * 0.083),
-                            border: Border.all(color: const Color(0xFF0200C9), width: 2),
+                            border: Border.all(color: const Color(0xFF0008AB), width: 2),
                             boxShadow: [
                               BoxShadow(
-                                  color: const Color(0xFF0200C9).withOpacity(0.15),
+                                  color: const Color(0xFF0008AB).withOpacity(0.15),
                                   offset: const Offset(4, 4),
                                   blurRadius: 20,
                                   spreadRadius: 10),
@@ -797,9 +645,9 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                           child: Text(
                             textDirection: TextDirection.rtl,
                             textAlign: TextAlign.center,
-                            "اضافه کن",
+                            AppLocalizations.of(context)!.add6,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: const Color(0xFFE8BCB9),
                               fontSize: size.width * 0.073,
                               fontFamily: "Sans",
                             ),
@@ -807,9 +655,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                         ),
                       ),
                       onTap: () {
-                        if (addDropdownButtonValue == 'محل قرارگیری محصول') {
-                          addLocation();
-                        } else if (addDropdownButtonValue == 'محصول ماژول روشنایی (لومسی)') {
+                        if (addDropdownButtonValue == AppLocalizations.of(context)!.lamp) {
                           addLumcyModule();
                         } else {
                           addLumakeyModule();

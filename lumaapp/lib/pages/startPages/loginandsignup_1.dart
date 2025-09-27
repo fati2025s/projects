@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../l10n/app_localizations.dart';
 import '../../utils.dart' as utils;
 import 'loginandsignup_2.dart';
 
@@ -19,6 +20,7 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
   bool register = false;
   bool otpState = false;
   bool isLoading = false;
+
 
   bool validateMobile(String phoneNumber) {
     RegExp regex = RegExp(r'^(?:\+98|98|0)?9\d{9}$');
@@ -70,7 +72,7 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
                     child: Text(
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
-                      "تایید",
+                      AppLocalizations.of(context)!.taiid,
                       style: TextStyle(
                         color: const Color(0xFFE8BCB9),
                         fontSize: MediaQuery.of(context).size.width * 0.053,
@@ -101,12 +103,12 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
     });
 
     if (mobile.isEmpty) {
-      _showErrorDialog("لطفا شماره تلفن همراه خود را وارد کنید.");
+      _showErrorDialog(AppLocalizations.of(context)!.phonenumber);
       return;
     }
 
     if (!validateMobile(mobile)) {
-      _showErrorDialog("شماره ای که وارد کرده اید نامعتبر است.");
+      _showErrorDialog(AppLocalizations.of(context)!.etebar);
       return;
     }
 
@@ -132,7 +134,7 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            const OTPVerificationScreen(mobileNumber: mobileTextEditingController.text),
+            OTPVerificationScreen(mobileNumber: mobileTextEditingController.text),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
               const end = Offset.zero;
@@ -151,15 +153,16 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
         );
 
       } else {
-        _showErrorDialog('خطای نامشخصی رخ داده است.');
+        _showErrorDialog(AppLocalizations.of(context)!.error1);
       }
     } catch (e) {
-      _showErrorDialog('مشکلی در ارتباط با سرور وجود دارد.');
+      _showErrorDialog(AppLocalizations.of(context)!.error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -183,9 +186,9 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
             children: [
               SizedBox(height: size.height * 0.05),
 
-              const Text(
-                'ورود و ثبت نام',
-                style: TextStyle(
+              Text(
+                s.log,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -195,32 +198,33 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
               ),
               const SizedBox(height: 16),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF39B54A),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 40,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
+              Directionality( // ✅ تنظیم جهت به LTR برای ثابت ماندن ترتیب
+                textDirection: TextDirection.ltr,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // نوار اول (سمت چپ)
+                    Container(
+                        width: 40,
+                        height: 8,
+                        decoration: BoxDecoration(
+                            color: const Color(0xFF39B54A),
+                            borderRadius: BorderRadius.circular(4))),
+                    const SizedBox(width: 8),
+                    // نوار دوم (سمت راست - سبز رنگ)
+                    Container(
+                        width: 40,
+                        height: 8,
+                        decoration: BoxDecoration(
+                            color: Colors.white, // ✅ رنگ سبز
+                            borderRadius: BorderRadius.circular(4))),
+                  ],
+                ),
               ),
               SizedBox(height: size.height* 0.2),
 
-              const Text(
-                'شماره تلفن همراه',
+               Text(
+                s.phone,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -257,8 +261,8 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'تایید',
+                    child:  Text(
+                      s.taiid,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,

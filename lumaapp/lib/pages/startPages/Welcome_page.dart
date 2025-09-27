@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'loginandsignup_1.dart';
+
+//وارد شد سری های بعد مستقیم بره هوم از اینا تگدره
+
+// شمارنده تایم بزارم و ارسال مجددو وصل کتم
+
+// پروفایل رو بزارم آخرش
+
+// زبان
+
+//تم
+
+// ویرایش اطلاعات
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final s = AppLocalizations.of(context)!;
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
@@ -36,9 +50,9 @@ class WelcomePage extends StatelessWidget {
                 ),
                 //const SizedBox(height: 8),
                 SizedBox(height: size.height * 0.035),
-                const Text(
-                  'خوش آمدید',
-                  style: TextStyle(
+                Text(
+                  s.welcome,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -80,16 +94,16 @@ class WelcomePage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF39B54A), // رنگ سبز دکمه
+                      backgroundColor: const Color(0xFF39B54A),
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      elevation: 5, // سایه برای برجسته‌سازی
+                      elevation: 5,
                     ),
-                    child: const Text(
-                      'ورود',
-                      style: TextStyle(
+                    child: Text(
+                      s.enter,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -100,9 +114,8 @@ class WelcomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // متن "به شبکه های اجتماعی ما بپیوندید"
                 Text(
-                  'به شبکه های اجتماعی ما بپیوندید',
+                  s.social,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 16,
@@ -111,7 +124,6 @@ class WelcomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
 
-                // آیکون‌های شبکه‌های اجتماعی
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

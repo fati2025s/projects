@@ -1,10 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lumaapp/pages/mainPages/home_page.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/slider_widget.dart';
-import 'package:tn_bottom_sheet_navigator/tn_bottom_sheet_navigator.dart';
+import 'package:tn_bottom_sheet_navigator/tn_bottom_sheet_navigator.dart' hide TnBottomSheetSettings;
 import 'package:simple_shadow/simple_shadow.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../mainPages/add_module.dart';
 import '/utils.dart' as utils;
 
 class LumakeyModule {
@@ -40,10 +43,13 @@ Future<List<LumakeyModule>> fetchLumakeyModules(int locationId) async {
 }
 
 class LocationPage extends StatefulWidget {
-  final int id;
+  final String mobileNumber;
+  final locationcard;
+
 
   const LocationPage({
-    required this.id,
+    required this.locationcard,
+    required this.mobileNumber,
     super.key,
   });
 
@@ -53,11 +59,15 @@ class LocationPage extends StatefulWidget {
 
 class _LocationPageState extends State<LocationPage> {
   late Future<List<LumakeyModule>> futureLumakeyModules;
+  int _tabIndex = 0;
+  late PageController _pageController;
+  late List<bool> isSelected = [false, false, false, false];
 
   @override
   void initState() {
     super.initState();
-    futureLumakeyModules = fetchLumakeyModules(widget.id);
+    futureLumakeyModules = fetchLumakeyModules(widget.locationcard.id);
+    _pageController = PageController();
   }
 
   @override
@@ -68,10 +78,13 @@ class _LocationPageState extends State<LocationPage> {
         width: size.width,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF1D1A39),
-              Color(0xFF451952),
+              Color(0xFF000AAB),
+              Colors.black,
             ],
+            stops: [0.4, 0.8],
           ),
         ),
         child: Column(
@@ -81,51 +94,77 @@ class _LocationPageState extends State<LocationPage> {
             Padding(
               padding: EdgeInsets.only(right: size.width * 0.063),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                textDirection: TextDirection.rtl,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "خوش آمدید!",
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      color: const Color(0xFFE8BCB9).withOpacity(0.5),
-                      fontFamily: "Sans",
-                      fontSize: size.width * 0.063,
-                      shadows: [
-                        BoxShadow(
-                          color: const Color(0xFFF39F5A).withOpacity(0.3),
-                          offset: const Offset(4, 4),
-                          blurRadius: 20,
-                        ),
-                      ],
+                  Builder(
+                    builder: (context) => IconButton(
+                      icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 28
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => HomePage(mobileNumber: widget.mobileNumber),
+                        );
+                      },
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: size.height * 0.015),
-            Padding(
-              padding: EdgeInsets.only(right: size.width * 0.063),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                textDirection: TextDirection.rtl,
-                children: [
+                  if(widget.locationcard.name == "آشپزخانه")
                   Text(
-                    "سیدعلی حسینی",
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      color: const Color(0xFFE8BCB9),
-                      fontFamily: "Sans",
-                      fontSize: size.width * 0.050,
-                      shadows: [
-                        BoxShadow(
-                          color: const Color(0xFFF39F5A).withOpacity(0.3),
-                          offset: const Offset(4, 4),
-                          blurRadius: 20,
-                        ),
-                      ],
+                    AppLocalizations.of(context)!.loc4,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if(widget.locationcard.name == "اتاق خواب")
+                    Text(
+                      AppLocalizations.of(context)!.loc2,
+                      style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if(widget.locationcard.name == "سرویس بهداشتی")
+                    Text(
+                      AppLocalizations.of(context)!.loc1,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if(widget.locationcard.name == "سالن پذیرایی")
+                    Text(
+                      AppLocalizations.of(context)!.loc3,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  //const SizedBox(width: 18),
+                  Builder(
+                    builder: (context) => IconButton(
+                      icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 28
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          //isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => AddProduct(Locationcard: widget.locationcard,mobileNumber:widget.mobileNumber),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -158,44 +197,84 @@ class _LocationPageState extends State<LocationPage> {
                     padding: EdgeInsets.symmetric(horizontal: size.width * 0.042),
                     child: Column(
                       children: [
-                        SizedBox(height: size.height * 0.020),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            Text(
-                              "آشپزخانه",
-                              textDirection: TextDirection.rtl,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color: const Color(0xFFE8BCB9),
-                                fontFamily: "Sans",
-                                fontSize: size.width * 0.050,
-                                shadows: [
-                                  BoxShadow(
-                                    color: const Color(0xFFF39F5A).withOpacity(0.3),
-                                    offset: const Offset(4, 4),
-                                    blurRadius: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                        //SizedBox(height: size.height * 0.020),
                         SizedBox(height: size.height * 0.030),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0; i < isSelected.length; i++) {
+                                    isSelected[i] = false;
+                                  }
+                                  isSelected[0] = true;
+                                });
+
+                                BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
+                                  'LumakeyModuleList',
+                                  params: {'id': widget.locationcard.id},
+                                  settings: TnBottomSheetSettings(
+                                    constraints: BoxConstraints(
+                                      maxHeight: size.height * 0.640,
+                                    ),
+                                    isScrollControlled: true,
+                                    isDismisable: true,
+                                  ),
+                                );
+                              },
                               child: Container(
                                 height: size.width * 0.208,
                                 width: size.width * 0.208,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF39F5A).withOpacity(0.8),
+                                  color: isSelected[0]
+                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
+                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    width: 2,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFFF39F5A).withOpacity(0.5),
+                                      color: const Color(0xFF000000).withOpacity(0.5),
+                                      offset: const Offset(0, 0),
+                                      blurRadius: 20,
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: SimpleShadow(
+                                    color: const Color(0xFF000000),
+                                    opacity: 0.5,
+                                    offset: const Offset(4, 4),
+                                    sigma: 2,
+                                    child: Image.asset(
+                                      'images/modules/AirConditioner.png',
+                                      width: size.width * 0.104,
+                                      height: size.width * 0.104,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            GestureDetector(
+                              child: Container(
+                                height: size.width * 0.208,
+                                width: size.width * 0.208,
+                                decoration: BoxDecoration(
+                                  color: isSelected[1]
+                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
+                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: const Color(0xFF000000).withOpacity(0.5),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
@@ -207,35 +286,49 @@ class _LocationPageState extends State<LocationPage> {
                                     offset: const Offset(4, 4),
                                     sigma: 2,
                                     child: Image(
-                                      image: const AssetImage('images/AirConditioner.png'),
+                                      image: const AssetImage('images/modules/LightOn.png'),
                                       width: size.width * 0.104,
                                       height: size.width * 0.104,
                                     ),
                                   ),
                                 ),
                               ),
-                              onTap: () => context.showTnBottomSheetNav(
-                                'LumakeyModuleList',
-                                params: {'id': widget.id},
-                                settings: TnBottomSheetSettings(
-                                  constraints: BoxConstraints(
-                                    maxHeight: size.height * 0.640,
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0; i < isSelected.length; i++) {
+                                    isSelected[i] = false;   // همه خاموش
+                                  }
+                                  isSelected[1] = true;
+                                });
+                                BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
+                                  'LumcyModuleList',
+                                  params: {'id': widget.locationcard.id},
+                                  settings: TnBottomSheetSettings(
+                                    constraints: BoxConstraints(
+                                      maxHeight: size.height * 0.640,
+                                    ),
+                                    isScrollControlled: true,
+                                    isDismisable: true,
                                   ),
-                                  isScrollControlled: true,
-                                  isDismisable: true,
-                                ),
-                              ),
+                                );
+                              },
                             ),
                             GestureDetector(
                               child: Container(
                                 height: size.width * 0.208,
                                 width: size.width * 0.208,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF39F5A).withOpacity(0.8),
+                                  color: isSelected[2]
+                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
+                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    width: 2,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFFF39F5A).withOpacity(0.5),
+                                        color: const Color(0xFF000000).withOpacity(0.5),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
@@ -247,35 +340,38 @@ class _LocationPageState extends State<LocationPage> {
                                     offset: const Offset(4, 4),
                                     sigma: 2,
                                     child: Image(
-                                      image: const AssetImage('images/LightOn.png'),
+                                      image: const AssetImage('images/modules/TV.png'),
                                       width: size.width * 0.104,
                                       height: size.width * 0.104,
                                     ),
                                   ),
                                 ),
                               ),
-                              onTap: () => context.showTnBottomSheetNav(
-                                'LumcyModuleList',
-                                params: {'id': widget.id},
-                                settings: TnBottomSheetSettings(
-                                  constraints: BoxConstraints(
-                                    maxHeight: size.height * 0.640,
-                                  ),
-                                  isScrollControlled: true,
-                                  isDismisable: true,
-                                ),
-                              ),
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0; i < isSelected.length; i++) {
+                                    isSelected[i] = false;   // همه خاموش
+                                  }
+                                  isSelected[2] = true;
+                                });
+                              },
                             ),
                             GestureDetector(
                               child: Container(
                                 height: size.width * 0.208,
                                 width: size.width * 0.208,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF39F5A).withOpacity(0.8),
+                                  color: isSelected[3]
+                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
+                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    width: 2,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFFF39F5A).withOpacity(0.5),
+                                        color: const Color(0xFF000000).withOpacity(0.5),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
@@ -287,44 +383,21 @@ class _LocationPageState extends State<LocationPage> {
                                     offset: const Offset(4, 4),
                                     sigma: 2,
                                     child: Image(
-                                      image: const AssetImage('images/TV.png'),
+                                      image: const AssetImage('images/modules/Wi-FiRouter.png'),
                                       width: size.width * 0.104,
                                       height: size.width * 0.104,
                                     ),
                                   ),
                                 ),
                               ),
-                              onTap: () {},
-                            ),
-                            GestureDetector(
-                              child: Container(
-                                height: size.width * 0.208,
-                                width: size.width * 0.208,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF39F5A).withOpacity(0.8),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: const Color(0xFFF39F5A).withOpacity(0.5),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: Center(
-                                  child: SimpleShadow(
-                                    color: const Color(0xFF000000),
-                                    opacity: 0.5,
-                                    offset: const Offset(4, 4),
-                                    sigma: 2,
-                                    child: Image(
-                                      image: const AssetImage('images/Wi-FiRouter.png'),
-                                      width: size.width * 0.104,
-                                      height: size.width * 0.104,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0; i < isSelected.length; i++) {
+                                    isSelected[i] = false;   // همه خاموش
+                                  }
+                                  isSelected[3] = true;
+                                });
+                              },
                             ),
                           ],
                         ),
@@ -339,7 +412,20 @@ class _LocationPageState extends State<LocationPage> {
                                 return Center(child: Text('Error: ${snapshot.error}'));
                               } else {
                                 final lumakeyModules = snapshot.data!;
-                                if (lumakeyModules.isNotEmpty) {
+
+                                if(lumakeyModules.isEmpty){
+                                  return const Center(
+                                    child: Text(
+                                      'ماژولی نداری',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                else {
                                   return Column(
                                     children: [
                                       Row(
@@ -366,15 +452,13 @@ class _LocationPageState extends State<LocationPage> {
                                         ],
                                       ),
                                       SizedBox(height: size.height * 0.030),
-                                      Expanded(
+                                      Flexible(
                                         child: SliderWidget(
                                           initialVal: lumakeyModules.first.temperature_value,
                                         ),
                                       ),
                                     ],
                                   );
-                                } else {
-                                  return const SizedBox();
                                 }
                               }
                             },
