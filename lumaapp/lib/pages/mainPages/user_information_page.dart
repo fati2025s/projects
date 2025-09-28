@@ -129,7 +129,7 @@ class _UserProfileScreenState extends State<UserInformationPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('${utils.serverAddress}/user/update-profile/'), // 👈 آدرس API به‌روزرسانی
+        Uri.parse('${utils.serverAddress}/user/update_profile/'), // 👈 آدرس API به‌روزرسانی
         body: json.encode({
           'username': _controllerUsername.text,
         }),
@@ -146,7 +146,6 @@ class _UserProfileScreenState extends State<UserInformationPage> {
 
         userManager.setUsername(_controllerUsername.text);
 
-        // 2. نمایش موفقیت
         setState(() {
           _isEditing = false;
           _isLoading = false;
@@ -173,7 +172,8 @@ class _UserProfileScreenState extends State<UserInformationPage> {
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
     final userManager = Provider.of<UserManager>(context);
-
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
@@ -181,15 +181,14 @@ class _UserProfileScreenState extends State<UserInformationPage> {
         children: [
           // پس‌زمینه گرادیانت
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF000AAB),
-                  Colors.black,
-                ],
-                stops: [0.4, 0.8],
+                colors: isDarkMode
+                    ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+                    : const [Color(0xFF3F5FFF), Colors.white],
+                stops: const [0.4, 1],
               ),
             ),
           ),
@@ -246,12 +245,16 @@ class _UserProfileScreenState extends State<UserInformationPage> {
   }
 
   Widget _buildAppBar(BuildContext context, AppLocalizations s) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     final themeManager = Provider.of<ThemeManager>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+          icon: Icon(Icons.arrow_back, color: isDarkMode
+              ?  Colors.white // رنگ‌های تم تیره
+              :  Colors.black, size: 28),
           onPressed: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => HomePage(mobileNumber: widget.mobileNumber)),
@@ -260,8 +263,10 @@ class _UserProfileScreenState extends State<UserInformationPage> {
         ),
         Text(
           s.prof,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: isDarkMode
+                ?  Colors.white // رنگ‌های تم تیره
+                :  Colors.black,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -278,7 +283,9 @@ class _UserProfileScreenState extends State<UserInformationPage> {
                 themeManager.currentTheme == AppTheme.dark
                     ? Icons.light_mode_outlined
                     : Icons.dark_mode_outlined,
-                color: Colors.white,
+                color: isDarkMode
+                    ?  Colors.white // رنگ‌های تم تیره
+                    :  Colors.black,
               ),
               onPressed: () {
                 // ✅ فراخوانی متد toggleTheme
@@ -288,7 +295,9 @@ class _UserProfileScreenState extends State<UserInformationPage> {
             IconButton(
               icon: Icon(
                 _isEditing ? Icons.check : Icons.edit,
-                color: Colors.white,
+                color: isDarkMode
+                    ?  Colors.white // رنگ‌های تم تیره
+                    :  Colors.black,
               ),
               onPressed: () {
                 if (_isEditing) {
@@ -378,15 +387,21 @@ class _UserProfileScreenState extends State<UserInformationPage> {
   }
 
   Widget _buildLanguageChanger(BuildContext context, AppLocalizations s) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           s.lang,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: isDarkMode
+              ?  Colors.white // رنگ‌های تم تیره
+              :  Colors.black, fontSize: 16),
         ),
         IconButton(
-          icon: const Icon(Icons.lan, color: Colors.white),
+          icon: Icon(Icons.lan, color: isDarkMode
+              ?  Colors.white // رنگ‌های تم تیره
+              :  Colors.black),
           onPressed: () {
             final lang = Provider.of<LanguageManager>(context, listen: false);
             if (lang.locale.languageCode == "fa") {

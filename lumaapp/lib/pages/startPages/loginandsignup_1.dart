@@ -18,7 +18,7 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
   TextEditingController mobileTextEditingController = TextEditingController();
   TextEditingController otpCodeTextEditingController = TextEditingController();
   bool register = false;
-  bool otpState = false;
+  //bool otpState = false;
   bool isLoading = false;
 
 
@@ -28,13 +28,17 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
   }
 
   void _showErrorDialog(String message) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode
+            ?  Colors.white // رنگ‌های تم تیره
+            :  Colors.black,
         contentPadding: const EdgeInsets.all(0),
         content: Material(
           color: Colors.transparent,
@@ -128,13 +132,13 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
 
         setState(() {
           isLoading = false;
-          otpState = true;
+          //otpState = true;
         });
 
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            OTPVerificationScreen(mobileNumber: mobileTextEditingController.text),
+            OTPVerificationScreen(mobileNumber: mobileTextEditingController.text,register: register,),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
               const end = Offset.zero;
@@ -164,18 +168,19 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
     final size = MediaQuery.of(context).size;
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF000AAB),
-              Colors.black,
-            ],
-            stops: [0.4, 0.8],
+            colors: isDarkMode
+                ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+                : const [Color(0xFF3F5FFF), Colors.white],
+            stops: const [0.4, 1],
           ),
         ),
         child: Padding(
@@ -188,8 +193,10 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
 
               Text(
                 s.log,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: isDarkMode
+                      ?  Colors.white // رنگ‌های تم تیره
+                      :  Colors.black,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -226,7 +233,9 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
                Text(
                 s.phone,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: isDarkMode
+                      ?  Colors.white // رنگ‌های تم تیره
+                      :  Colors.black,
                   fontSize: 18,
                 ),
                 textAlign: TextAlign.right,
@@ -236,10 +245,14 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
               TextField(
                 controller: mobileTextEditingController,
                 keyboardType: TextInputType.phone,
-                style: const TextStyle(color: Colors.white, fontSize: 24),
-                decoration: const InputDecoration(
+                style: TextStyle(color: isDarkMode
+                    ?  Colors.white // رنگ‌های تم تیره
+                    :  Colors.black, fontSize: 24),
+                decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(color: isDarkMode
+                        ?  Colors.white // رنگ‌های تم تیره
+                        :  Colors.black, width: 2),
                   ),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFF39B54A), width: 2),
@@ -264,7 +277,9 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
                     child:  Text(
                       s.taiid,
                       style: TextStyle(
-                        color: Colors.white,
+                          color: isDarkMode
+                              ?  Colors.white // رنگ‌های تم تیره
+                              :  Colors.black,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

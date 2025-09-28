@@ -10,21 +10,21 @@ import '../mainPages/home_page.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String mobileNumber;
+  bool register;
 
-  const OTPVerificationScreen({super.key, required this.mobileNumber});
+  OTPVerificationScreen({super.key, required this.mobileNumber,required this.register});
 
   @override
   State<OTPVerificationScreen> createState() => _OtpVerificationState();
 }
 
 class _OtpVerificationState extends State<OTPVerificationScreen> {
-  // برای ۶ رقم OTP
   final List<TextEditingController> otpControllers =
   List.generate(6, (index) => TextEditingController());
   final List<FocusNode> otpFocusNodes =
   List.generate(6, (index) => FocusNode());
 
-  bool register = false;
+  //bool register = false;
   bool isLoading = false;
 
   void _showErrorDialog(String message) {
@@ -115,7 +115,7 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse((register)
+        Uri.parse((widget.register)
             ? '${utils.serverAddress}/auth/verify-register-otp/'
             : '${utils.serverAddress}/auth/verify-login-otp/'),
         body: json.encode({
@@ -167,17 +167,21 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final s = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF000AAB), Colors.black],
-            stops: [0.4, 0.8],
+            colors: isDarkMode
+                ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+                : const [Color(0xFF3F5FFF), Colors.white],
+            stops: const [0.4, 1],
           ),
         ),
         child: Padding(
@@ -188,7 +192,9 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                Text(
                 s.log,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: isDarkMode
+                        ?  Colors.white // رنگ‌های تم تیره
+                        :  Colors.black,
                     fontSize: 28,
                     fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
@@ -221,7 +227,9 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                Text(
                s.code,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: isDarkMode
+                        ?  Colors.white // رنگ‌های تم تیره
+                        :  Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
                 textAlign: TextAlign.right,
@@ -242,8 +250,10 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                       keyboardType: TextInputType.number,
                       maxLength: 1,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: isDarkMode
+                              ?  Colors.white // رنگ‌های تم تیره
+                              :  Colors.black,
                           fontSize: 24,
                           fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
@@ -310,7 +320,7 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                       Navigator.of(context).push(
                         PageRouteBuilder(
                           pageBuilder: (context, animation, secondaryAnimation) =>
-                              OTPVerificationScreen(mobileNumber: widget.mobileNumber),
+                              OTPVerificationScreen(mobileNumber: widget.mobileNumber,register: widget.register,),
                           transitionsBuilder: (context, animation, secondaryAnimation, child) {
                             const begin = Offset(0.0, 1.0); // شروع انیمیشن از پایین
                             const end = Offset.zero; // پایان انیمیشن در جایگاه نهایی

@@ -170,7 +170,15 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
 
   @override
   Widget build(BuildContext context) {
+    final String firstItemValue = AppLocalizations.of(context)!.add2;
     final Size size = MediaQuery.of(context).size;
+    final String firstLocationItem = AppLocalizations.of(context)!.loc2;
+    if (addLocationDropdownButtonValue.isEmpty) {
+      addLocationDropdownButtonValue = firstLocationItem;
+    }
+    if (addDropdownButtonValue.isEmpty) {
+      addDropdownButtonValue = firstItemValue;
+    }
     return Scaffold(
       drawerScrimColor: const Color(0xFFD9D9D9).withOpacity(0),
       backgroundColor: const Color(0xFFD9D9D9).withOpacity(0),
@@ -265,7 +273,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                           value: addDropdownButtonValue,
                           items: [
                             DropdownMenuItem(
-                              value: AppLocalizations.of(context)!.add2,
+                              value: firstItemValue,
                               child:  Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(

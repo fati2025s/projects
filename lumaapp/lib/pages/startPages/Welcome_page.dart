@@ -22,18 +22,19 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppLocalizations.of(context)!;
     final Size size = MediaQuery.of(context).size;
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Scaffold(
       body: Container(
         // گرادیانت پس‌زمینه
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF000AAB), // آبی تیره
-              Colors.black // آبی بسیار تیره
-            ],
-            stops: [0.4, 0.8],
+            colors: isDarkMode
+                ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+                : const [Color(0xFF3F5FFF), Colors.white],
+            stops: const [0.4, 1],
           ),
         ),
         child: Center(
@@ -52,15 +53,19 @@ class WelcomePage extends StatelessWidget {
                 SizedBox(height: size.height * 0.035),
                 Text(
                   s.welcome,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: isDarkMode
+                        ?  Colors.white // رنگ‌های تم تیره
+                        :  Colors.black,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     shadows: [
                       BoxShadow(
-                        color: const Color(0xFFFFFFFF),
+                  color: isDarkMode
+                  ?  Colors.white // رنگ‌های تم تیره
+                      :  Color(0xFF39B54A),
                         offset: Offset(4,4), // موقعیت سایه (x, y)
-                        blurRadius: 20, // میزان تاریکی یا پخش شدن سایه
+                        blurRadius: 50, // میزان تاریکی یا پخش شدن سایه
                          // رنگ سایه (شفافیت 50% مشکی)
                       ),
                     ],
@@ -117,7 +122,9 @@ class WelcomePage extends StatelessWidget {
                 Text(
                   s.social,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: isDarkMode
+                        ?  Colors.white.withOpacity(0.8) // رنگ‌های تم تیره
+                        :  Colors.black.withOpacity(0.8),
                     fontSize: 16,
                   ),
                   textDirection: TextDirection.rtl,

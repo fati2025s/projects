@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils.dart' as utils;
+import '../../widgets/tem.dart' show AppTheme, ThemeManager;
 import '../modulePages/location_page.dart';
 import '../startPages/loginandsignup_1.dart';
 
@@ -142,7 +143,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     final userManager = Provider.of<UserManager>(context);
+    final themeManager = Provider.of<ThemeManager>(context);
     final s = AppLocalizations.of(context)!;
     return Scaffold(
       body: PageView(
@@ -170,7 +174,10 @@ class _HomePageState extends State<HomePage> {
             Container(
               height: 200,
               width: double.infinity,
-              color: const Color(0xFF00B04F),
+              color: isDarkMode
+                  ?  Color(0xFF00B04F) // رنگ‌های تم تیره
+                  :  Color(0xFF21DB2A),
+              //color: const Color(0xFF00B04F),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -199,6 +206,19 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(width: 16),
                       ],
                     ),
+                    IconButton(
+                      icon: Icon(
+                        // نمایش آیکون مناسب بر اساس تم فعلی
+                        themeManager.currentTheme == AppTheme.dark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        // ✅ فراخوانی متد toggleTheme
+                        themeManager.toggleTheme();
+                      },
+                    ),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -206,7 +226,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
               child: Container(
-                color: Colors.black,
+                color: isDarkMode
+                    ?  Colors.black // رنگ‌های تم تیره
+                    :  Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -223,11 +245,15 @@ class _HomePageState extends State<HomePage> {
                         child:  Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Icon(Icons.edit, color: Colors.white),
+                            Icon(Icons.edit, color: isDarkMode
+                                ?  Colors.white // رنگ‌های تم تیره
+                                :  Colors.black,),
                             SizedBox(width: 10),
                             Text(
                               s.edit,
-                              style: TextStyle(color: Colors.white, fontSize: 18),
+                              style: TextStyle(color: isDarkMode
+                                  ?  Colors.white // رنگ‌های تم تیره
+                                  :  Colors.black, fontSize: 18),
                             ),
                           ],
                         ),
@@ -239,9 +265,13 @@ class _HomePageState extends State<HomePage> {
                       title:  Text(
                         s.logout,
                         textAlign: TextAlign.left,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black),
                       ),
-                      leading: const Icon(Icons.logout, color: Colors.white),
+                      leading: Icon(Icons.logout, color: isDarkMode
+                          ?  Colors.white // رنگ‌های تم تیره
+                          :  Colors.black),
                       onTap: () {
                         Navigator.of(context).push(
                           PageRouteBuilder(
@@ -270,9 +300,13 @@ class _HomePageState extends State<HomePage> {
                       title: Text(
                         s.delacco,
                         textAlign: TextAlign.left,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black),
                       ),
-                      leading: Icon(Icons.delete, color: Colors.white),
+                      leading: Icon(Icons.delete, color: isDarkMode
+                          ?  Colors.white // رنگ‌های تم تیره
+                          :  Colors.black),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -282,28 +316,43 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: CircleNavBar(
+      bottomNavigationBar: Directionality(
+        textDirection: TextDirection.ltr,
+        child: CircleNavBar(
         activeIcons: [
           Image.asset(
             'images/bottomNavigationBar/HomeIconMenu.png',
             width: 30,
             height: 30,
           ),
-          const Icon(Icons.settings, color: Colors.white),
+          Image.asset(
+            'images/bottomNavigationBar/OnlineSupportIconMenu.png',
+            width: 30,
+            height: 30,
+          ),
         ],
         inactiveIcons: [
           Image.asset(
             'images/bottomNavigationBar/HomeIconMenu.png',
             width: 30,
             height: 30,
-            color: Colors.white70,
+            //color: Colors.white70,
           ),
-          const Icon(Icons.settings, color: Colors.white70),
+          Image.asset(
+            'images/bottomNavigationBar/OnlineSupportIconMenu.png',
+            width: 30,
+            height: 30,
+            //color: Colors.white70,
+          ),
         ],
-        color: const Color(0xFF1100DB),
+          color: isDarkMode
+              ?  const Color(0xFF0100C4)// رنگ‌های تم تیره
+              :  const Color(0xFF3F5FFF),
         height: 60,
         circleWidth: 60,
-        circleColor: const Color(0xFFBDFFBD),
+        circleColor: isDarkMode
+            ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
+            :  const Color(0xFF21DB2A).withOpacity(0.80),
         activeIndex: _tabIndex,
         onTap: (index) {
           _pageController.animateToPage(
@@ -313,20 +362,22 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+      ),
     );
   }
 
   Widget _buildMainContent() {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF000AAB),
-            Colors.black,
-          ],
-          stops: [0.4, 0.8],
+          colors: isDarkMode
+              ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+              : const [Color(0xFF3F5FFF), Colors.white],
+          stops: const [0.4, 1],
         ),
       ),
       child: Column(
@@ -343,7 +394,9 @@ class _HomePageState extends State<HomePage> {
                   alignment: Alignment.centerRight,
                   child: Text(
                     AppLocalizations.of(context)!.module,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: TextStyle(color: isDarkMode
+                        ?  Colors.white // رنگ‌های تم تیره
+                        :  Colors.black, fontSize: 20),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -388,6 +441,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildAppBar() {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     final s = AppLocalizations.of(context)!;
     return SafeArea(
       child: Row(
@@ -395,10 +450,12 @@ class _HomePageState extends State<HomePage> {
         children: [
           Builder(
             builder: (context) => IconButton(
-              icon: const Icon(
+              icon: Icon(
                   Icons.menu,
-                  color: Colors.white,
-                  size: 60
+                  color: isDarkMode
+                      ?  Colors.white // رنگ‌های تم تیره
+                      :  Colors.black,
+                  size: 35
               ),
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
@@ -406,7 +463,9 @@ class _HomePageState extends State<HomePage> {
            Text(
             s.home,
             style: TextStyle(
-              color: Colors.white,
+              color: isDarkMode
+                  ?  Colors.white // رنگ‌های تم تیره
+                  :  Colors.black,
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
@@ -418,6 +477,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildModulePlacement() {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     final Size size = MediaQuery.of(context).size;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -433,16 +494,18 @@ class _HomePageState extends State<HomePage> {
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.right,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: isDarkMode
+                      ?  Colors.white // رنگ‌های تم تیره
+                      :  Colors.black,
                   fontFamily: "Sans",
                   fontSize: size.width * 0.050,
-                  shadows: [
+                  /*shadows: [
                     BoxShadow(
-                      color: Colors.black,
+                      color: Colors.white,
                       offset: const Offset(4, 4),
                       blurRadius: 20,
                     ),
-                  ],
+                  ],*/
                 ),
               ),
             ],
@@ -481,13 +544,18 @@ class _HomePageState extends State<HomePage> {
                             height: size.height * 0.256,
                             width: size.width * 0.333,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFBDFFBD).withOpacity(0.80),
+                              color: isDarkMode
+                                  ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
+                                  :  const Color(0xFF21DB2A).withOpacity(0.80),
+                              //color: ,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(size.width * 0.042),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFBDFFBD).withOpacity(0.50),
+                                  color: isDarkMode
+                                      ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
+                                      :  const Color(0xFF21DB2A).withOpacity(0.80),
                                   offset: const Offset(0, 0),
                                   blurRadius: 20,
                                 ),
@@ -601,8 +669,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                               border: Border.all(color: Colors.white54, width: 2),
                             ),
-                            child: const Center(
-                              child: Icon(Icons.add, color: Colors.white, size: 48),
+                            child: Center(
+                              child: Icon(Icons.add, color: isDarkMode
+                                  ?  Colors.white // رنگ‌های تم تیره
+                                  :  Colors.black, size: 48),
                             ),
                           ),
                         ),
@@ -618,56 +688,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
-  Widget _buildModuleCard(Map<String, dynamic> module) {
-    return Container(
-      width: 100,
-      height: 120,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: AssetImage(module['image']),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Colors.black.withOpacity(0.7),
-              Colors.transparent,
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                module['title'],
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-                textAlign: TextAlign.right,
-              ),
-              Text(
-                "${module['modules']} ماژول",
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-                textAlign: TextAlign.right,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildModuleType({required String title, required String icon}) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -676,7 +699,9 @@ class _HomePageState extends State<HomePage> {
           Text(
             title,
             textAlign: TextAlign.start,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+            style: TextStyle(color: isDarkMode
+                ?  Colors.white // رنگ‌های تم تیره
+                :  Colors.black, fontSize: 14),
           ),
           const SizedBox(height: 8),
           Image.asset(

@@ -73,18 +73,19 @@ class _LocationPageState extends State<LocationPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Scaffold(
       body: Container(
         width: size.width,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF000AAB),
-              Colors.black,
-            ],
-            stops: [0.4, 0.8],
+            colors: isDarkMode
+                ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+                : const [Color(0xFF3F5FFF), Colors.white],
+            stops: const [0.4, 1],
           ),
         ),
         child: Column(
@@ -93,15 +94,19 @@ class _LocationPageState extends State<LocationPage> {
             SizedBox(height: size.height * 0.060),
             Padding(
               padding: EdgeInsets.only(right: size.width * 0.063),
+
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Builder(
                     builder: (context) => IconButton(
-                      icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 28
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black,
+                        size: 28,
+
                       ),
                       onPressed: () {
                         showModalBottomSheet(
@@ -113,11 +118,14 @@ class _LocationPageState extends State<LocationPage> {
                       },
                     ),
                   ),
+
                   if(widget.locationcard.name == "آشپزخانه")
                   Text(
                     AppLocalizations.of(context)!.loc4,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style:  TextStyle(
+                      color: isDarkMode
+                          ?  Colors.white // رنگ‌های تم تیره
+                          :  Colors.black,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -125,8 +133,10 @@ class _LocationPageState extends State<LocationPage> {
                   if(widget.locationcard.name == "اتاق خواب")
                     Text(
                       AppLocalizations.of(context)!.loc2,
-                      style: const TextStyle(
-                      color: Colors.white,
+                      style: TextStyle(
+                        color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       ),
@@ -134,8 +144,10 @@ class _LocationPageState extends State<LocationPage> {
                   if(widget.locationcard.name == "سرویس بهداشتی")
                     Text(
                       AppLocalizations.of(context)!.loc1,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style:  TextStyle(
+                        color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
@@ -143,18 +155,21 @@ class _LocationPageState extends State<LocationPage> {
                   if(widget.locationcard.name == "سالن پذیرایی")
                     Text(
                       AppLocalizations.of(context)!.loc3,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: isDarkMode
+                            ?  Colors.white // رنگ‌های تم تیره
+                            :  Colors.black,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  //const SizedBox(width: 18),
                   Builder(
                     builder: (context) => IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                           Icons.add,
-                          color: Colors.white,
+                          color: isDarkMode
+                              ?  Colors.white // رنگ‌های تم تیره
+                              :  Colors.black,
                           size: 28
                       ),
                       onPressed: () {
@@ -167,6 +182,8 @@ class _LocationPageState extends State<LocationPage> {
                       },
                     ),
                   ),
+                  //const SizedBox(width: 18),
+
                 ],
               ),
             ),
@@ -179,13 +196,13 @@ class _LocationPageState extends State<LocationPage> {
                     child: Container(
                       width: size.width,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD9D9D9).withOpacity(0.15),
+                        color: const Color(0xFFFFFFFF).withOpacity(0.15),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(size.width * 0.104),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF000000).withOpacity(0.25),
+                            color: const Color(0xFFFFFFFF).withOpacity(0.25),
                             offset: const Offset(0, 4),
                             blurRadius: 4,
                           ),
@@ -232,12 +249,16 @@ class _LocationPageState extends State<LocationPage> {
                                       : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    color: isDarkMode
+                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
+                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF000000).withOpacity(0.5),
+                                      color: isDarkMode
+                                          ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
+                                          :  const Color(0xFFFFFFFF).withOpacity(0.80),
                                       offset: const Offset(0, 0),
                                       blurRadius: 20,
                                     ),
@@ -269,12 +290,16 @@ class _LocationPageState extends State<LocationPage> {
                                       : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    color: isDarkMode
+                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
+                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFF000000).withOpacity(0.5),
+                                        color: isDarkMode
+                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
+                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
@@ -323,12 +348,16 @@ class _LocationPageState extends State<LocationPage> {
                                       : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    color: isDarkMode
+                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
+                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFF000000).withOpacity(0.5),
+                                        color: isDarkMode
+                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
+                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
@@ -366,12 +395,17 @@ class _LocationPageState extends State<LocationPage> {
                                       : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(1), // border همیشه
+                                    color: isDarkMode
+                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
+                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                        color: const Color(0xFF000000).withOpacity(0.5),
+                                        color: isDarkMode
+                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
+                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
+                                        //color: const Color(0xFF000000).withOpacity(0.5),
                                         offset: const Offset(0, 0),
                                         blurRadius: 20)
                                   ],
