@@ -1,22 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:lumaapp/pages/mainPages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'loginandsignup_1.dart';
 
-//وارد شد سری های بعد مستقیم بره هوم از اینا تگدره
 
 // شمارنده تایم بزارم و ارسال مجددو وصل کتم
 
 // پروفایل رو بزارم آخرش
 
-// زبان
+// منو زیر صفحه تو لوکیشن پیج
 
-//تم
+//اسکن کیو آرکد
 
-// ویرایش اطلاعات
+// افزودن ماژول نیز به منوی پایین هوم
 
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
+//وارد شد سری های بعد مستقیم بره هوم از اینا تگدره
+
+// منوی ماژولا درست بیاد بالا
+
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState  extends State<WelcomeScreen> {
+  //const WelcomePage({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatusAndNavigate();
+  }
+
+  Future<void> _checkLoginStatusAndNavigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    //String? mobilenumber = prefs.getString('mobileNumber') ?? null;
+
+    if (isLoggedIn) {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

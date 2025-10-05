@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../utils.dart' as utils;
@@ -130,6 +131,9 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
 
         register = data['register'];
 
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('mobileNumber', mobile);
+
         setState(() {
           isLoading = false;
           //otpState = true;
@@ -172,7 +176,9 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
     final isDarkMode = currentTheme.brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
+      body: Stack(
+        children: [
+          Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -264,15 +270,14 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
                 child: SizedBox(
                   width: size.width * 0.5,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _sendMobileNumber();
-                    },
+                    onPressed: isLoading ? null : _sendMobileNumber,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF39B54A),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
+                      disabledBackgroundColor: const Color(0xFF39B54A).withOpacity(0.5),
                     ),
                     child:  Text(
                       s.taiid,
@@ -291,6 +296,21 @@ class _LoginandSignuP extends State<LoginSignupScreen> {
             ],
           ),
         ),
+          ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                // رنگ محو (مشکی با شفافیت پایین)
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  // دایره لودینگ سفید
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              ),
+            ),
+    ],
       ),
     );
   }

@@ -67,6 +67,43 @@
     "lang": "language",
     "prof": "User profile",
     "update": "Profile updated successfully",
-    "requiredField": "This field is required"
-
+    "requiredField": "This field is required",
+    "error10": "Error downloading modules:{statusCode}",
+        "@error10": {
+            "placeholders": {
+                 "statusCode": {}
+            }
+        },
+    "tempra": "temperature {location}",
+        "@tempra": {
+            "placeholders": {
+                         "location": {}
+                    }
+        },
+    "dontexit": "Cooler module is not available.",
+    "currentTemp": "currentTemp{temp}°c",
+    "@currentTemp": {
+                "placeholders": {
+                             "temp": {}
+                        }
+        },
+    "minTemp": "minTemp{cold}°c",
+        "@minTemp": {
+                    "placeholders": {
+                                 "cold": {}
+                            }
+            },
+    "maxTemp": "maxTemp{hot}°c",
+            "@maxTemp": {
+                        "placeholders": {
+                                     "hot": {}
+                                }
+                },
+    "coolerSetTemp": "coolerSetTemp{hot}°c",
+                "@coolerSetTemp": {
+                            "placeholders": {
+                                         "hot": {}
+                                    }
+                    },
+    "error11": "More than one cooler module cannot be added to a location."
 }

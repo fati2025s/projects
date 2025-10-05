@@ -11,9 +11,9 @@ import '../../widgets/username.dart';
 import 'home_page.dart';
 
 class UserInformationPage extends StatefulWidget {
-  final String mobileNumber;
+  //final String mobileNumber;
   final Function(Locale)? onLocaleChange;
-  const UserInformationPage({super.key, this.onLocaleChange, required this.mobileNumber});
+  const UserInformationPage({super.key, this.onLocaleChange});
 
   @override
   State<UserInformationPage> createState() => _UserProfileScreenState();
@@ -24,11 +24,10 @@ class _UserProfileScreenState extends State<UserInformationPage> {
   //bool isLoading = false;
 
   final TextEditingController _controllerUsername = TextEditingController();
-  // شماره موبایل فقط نمایش داده می‌شود و از ورودی گرفته نمی‌شود
-  // final TextEditingController _controllerMobile = TextEditingController();
 
   bool _isEditing = false;
-  bool _isLoading = false; // ✅ متغیر مدیریت لودینگ
+  bool _isLoading = false;
+  String mobile = '';// ✅ متغیر مدیریت لودینگ
 
   @override
   void initState() {
@@ -37,11 +36,13 @@ class _UserProfileScreenState extends State<UserInformationPage> {
       final userManager = Provider.of<UserManager>(context, listen: false);
       _controllerUsername.text = userManager.username;
     });
+    _loadmobile();
   }
 
-  // ------------------------------------------------------------------
-  // مدیریت داده‌های محلی
-  // ------------------------------------------------------------------
+  Future<void> _loadmobile() async{
+    final prefs = await SharedPreferences.getInstance();
+    mobile = (prefs.getString('mobileNumber') ?? null)!;
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -193,28 +194,24 @@ class _UserProfileScreenState extends State<UserInformationPage> {
             ),
           ),
 
-          // محتوای اصلی صفحه
           SafeArea(
-            child: Form( // ✅ استفاده از Form برای اعتبارسنجی
+            child: Form(
               key: _formKey,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20),
                 child: Column(
                   children: [
-                    _buildAppBar(context, s), // ✅ استفاده از متد کمکی برای AppBar
+                    _buildAppBar(context, s),
                     const SizedBox(height: 40),
-
-                    // فیلد شماره موبایل (فقط نمایش)
                     _buildReadOnlyField(
                       context,
                       s.phone,
-                      widget.mobileNumber,
+                      mobile,
                       Icons.phone_in_talk,
                     ),
 
                     const SizedBox(height: 30),
 
-                    // فیلد نام کاربری
                     _buildEditableField(
                       context,
                       _controllerUsername,
@@ -224,8 +221,6 @@ class _UserProfileScreenState extends State<UserInformationPage> {
                     ),
 
                     const SizedBox(height: 10),
-
-                    // بخش تغییر زبان
                     _buildLanguageChanger(context, s),
                   ],
                 ),
@@ -257,7 +252,7 @@ class _UserProfileScreenState extends State<UserInformationPage> {
               :  Colors.black, size: 28),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage(mobileNumber: widget.mobileNumber)),
+              MaterialPageRoute(builder: (context) => HomePage()),
             );
           },
         ),
@@ -284,11 +279,10 @@ class _UserProfileScreenState extends State<UserInformationPage> {
                     ? Icons.light_mode_outlined
                     : Icons.dark_mode_outlined,
                 color: isDarkMode
-                    ?  Colors.white // رنگ‌های تم تیره
+                    ?  Colors.white
                     :  Colors.black,
               ),
               onPressed: () {
-                // ✅ فراخوانی متد toggleTheme
                 themeManager.toggleTheme();
               },
             ),

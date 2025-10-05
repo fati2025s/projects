@@ -153,7 +153,7 @@ class _AddLocationOrProductState extends State<AddLocationOrProduct> {
                   onTap: () => Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  HomePage(mobileNumber:widget.mobileNumber),
+                      builder: (context) =>  HomePage(),
                     ),
                         (route) => false,
                   ),

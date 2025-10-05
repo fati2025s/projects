@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lumaapp/pages/mainPages/home_page.dart';
+import 'package:lumaapp/pages/startPages/Welcome_page.dart';
 import 'package:lumaapp/widgets/tem.dart';
 import 'package:lumaapp/widgets/username.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,7 @@ import 'package:tn_bottom_sheet_navigator/tn_bottom_sheet_navigator.dart';
 
 import 'l10n/app_localizations.dart';
 import 'language.dart';
-import 'pages/startPages/welcome_page.dart';
+//import 'pages/startPages/welcome_page.dart';
 import 'pages/mainPages/add_location.dart';
 import 'pages/modulePages/lumakey_module_list_bottom_sheet_page.dart';
 import 'pages/modulePages/lumcy_module_list_bottom_sheet_page.dart';
@@ -83,7 +84,7 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const WelcomePage(),
+      home: const WelcomeScreen(),
     );
   }
 }

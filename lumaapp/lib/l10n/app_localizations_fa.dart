@@ -185,4 +185,40 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get requiredField => 'این فیلد الزامی می باشد';
+
+  @override
+  String error10(Object statusCode) {
+    return 'خطا در دریافت ماژول‌ها:$statusCode';
+  }
+
+  @override
+  String tempra(Object location) {
+    return 'دمای $location';
+  }
+
+  @override
+  String get dontexit => 'ماژول کولر موجود نیست.';
+
+  @override
+  String currentTemp(Object temp) {
+    return ' دمای حال $temp°c';
+  }
+
+  @override
+  String minTemp(Object cold) {
+    return 'سرد ترین دما$cold°c';
+  }
+
+  @override
+  String maxTemp(Object hot) {
+    return 'گرم ترین دما$hot°c';
+  }
+
+  @override
+  String coolerSetTemp(Object hot) {
+    return 'دمای عمل کولر$hot°c';
+  }
+
+  @override
+  String get error11 => 'بیش از یک ماژول کولر نمی توان به یک محل افزود';
 }

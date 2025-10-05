@@ -10,21 +10,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils.dart' as utils;
+import '../../widgets/bottom_sheet_navigator_extension.dart';
 import '../../widgets/tem.dart' show AppTheme, ThemeManager;
 import '../modulePages/location_page.dart';
 import '../startPages/loginandsignup_1.dart';
 
-class TnBottomSheetSettings {
-  final BoxConstraints? constraints;
-  final bool isScrollControlled;
-  final bool isDismisable;
-
-  const TnBottomSheetSettings({
-    this.constraints,
-    this.isScrollControlled = false,
-    this.isDismisable = true,
-  });
-}
 
 class LocationCardModel {
   final int id;
@@ -48,48 +38,9 @@ class LocationCardModel {
   }
 }
 
-extension BuildContextTnBottomSheetNav on BuildContext {
-  Future<T?> showTnBottomSheetNav<T>(
-      String route, {
-        required TnBottomSheetSettings settings,
-        required Map<String, dynamic> params,
-      }) {
-    // resolve route -> widget (add more routes here if needed)
-    Widget? child;
-    final String mobileNumber= params['mobileNumber'] as String;
-    switch (route) {
-      case 'AddLocationOrProduct':
-        child = AddLocationOrProduct(mobileNumber : mobileNumber);
-        break;
-      default:
-        child = null;
-    }
-
-    if (child == null) {
-      debugPrint('TnBottomSheet: route "$route" not found.');
-      return Future.value(null);
-    }
-
-    return showModalBottomSheet<T>(
-      context: this,
-      isScrollControlled: settings.isScrollControlled,
-      isDismissible: settings.isDismisable,
-      enableDrag: settings.isDismisable,
-      constraints: settings.constraints,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        return SafeArea(
-          top: false,
-          child: child!,
-        );
-      },
-    );
-  }
-}
-
 class HomePage extends StatefulWidget {
-  final String mobileNumber;
-  const HomePage({super.key, required this.mobileNumber});
+  //final String mobileNumber;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -116,6 +67,7 @@ class _HomePageState extends State<HomePage> {
   late PageController _pageController;
   List<Map<String, dynamic>> modulePlacements = [];
   late Future<List<LocationCardModel>> futureLocationCards;
+  String mobile = '';
 
   @override
   void initState() {
@@ -123,6 +75,12 @@ class _HomePageState extends State<HomePage> {
     _pageController = PageController();
     futureLocationCards = fetchLocationCards();
     _loadUsername();
+    _loadmobile();
+  }
+
+  Future<void> _loadmobile() async{
+    final prefs = await SharedPreferences.getInstance();
+    mobile = (prefs.getString('mobileNumber') ?? null)!;
   }
 
   @override
@@ -175,7 +133,7 @@ class _HomePageState extends State<HomePage> {
               height: 200,
               width: double.infinity,
               color: isDarkMode
-                  ?  Color(0xFF00B04F) // رنگ‌های تم تیره
+                  ?  Color(0xFF00B04F)
                   :  Color(0xFF21DB2A),
               //color: const Color(0xFF00B04F),
               child: Padding(
@@ -239,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.pop(context);
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => UserInformationPage(mobileNumber: widget.mobileNumber)),
+                            MaterialPageRoute(builder: (context) => UserInformationPage()),
                           );
                         },
                         child:  Row(
@@ -572,9 +530,8 @@ class _HomePageState extends State<HomePage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      if(locationCard.name == "آشپزخانه")
                                       Text(
-                                        AppLocalizations.of(context)!.loc4,
+                                        locationCard.name,
                                         textDirection: TextDirection.rtl,
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
@@ -583,39 +540,6 @@ class _HomePageState extends State<HomePage> {
                                           fontSize: size.width * 0.040,
                                         ),
                                       ),
-                                      if(locationCard.name == "اتاق خواب")
-                                        Text(
-                                          AppLocalizations.of(context)!.loc2,
-                                          textDirection: TextDirection.rtl,
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                            color: const Color(0xFF1D1A39),
-                                            fontFamily: "Sans",
-                                            fontSize: size.width * 0.040,
-                                          ),
-                                        ),
-                                      if(locationCard.name == "سرویس بهداشتی")
-                                        Text(
-                                          AppLocalizations.of(context)!.loc1,
-                                          textDirection: TextDirection.rtl,
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                            color: const Color(0xFF1D1A39),
-                                            fontFamily: "Sans",
-                                            fontSize: size.width * 0.040,
-                                          ),
-                                        ),
-                                      if(locationCard.name == "سالن پذیرایی")
-                                        Text(
-                                          AppLocalizations.of(context)!.loc3,
-                                          textDirection: TextDirection.rtl,
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                            color: const Color(0xFF1D1A39),
-                                            fontFamily: "Sans",
-                                            fontSize: size.width * 0.040,
-                                          ),
-                                        ),
                                       Text(
                                         AppLocalizations.of(context)!.count(locationCard.countOfProducts.toString()),
                                         textDirection: TextDirection.rtl,
@@ -637,7 +561,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LocationPage(locationcard: locationCard,mobileNumber:widget.mobileNumber),
+                              builder: (context) => LocationPage(locationcard: locationCard),
                             ),
                           );
                         },
@@ -646,11 +570,14 @@ class _HomePageState extends State<HomePage> {
                       // کارت آخر = کارت افزودن
                       return GestureDetector(
                         onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            //isScrollControlled: true, // تا صفحه کامل بیاد بالا
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => AddLocationOrProduct(mobileNumber:widget.mobileNumber),
+                          // 👈 جایگزین کردن کل بلوک showModalBottomSheet
+                          BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
+                            'AddLocationOrProduct',
+                            params: {'mobileNumber': mobile},
+                            settings: const TnBottomSheetSettings(
+                              //isScrollControlled: true, // اگر می‌خواهید تمام صفحه را بگیرد
+                              isDismisable: true,
+                            ),
                           );
                         }, // همون متدی که نوشتی
                         child: Padding(

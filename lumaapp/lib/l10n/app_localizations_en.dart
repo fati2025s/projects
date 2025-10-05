@@ -185,4 +185,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requiredField => 'This field is required';
+
+  @override
+  String error10(Object statusCode) {
+    return 'Error downloading modules:$statusCode';
+  }
+
+  @override
+  String tempra(Object location) {
+    return 'temperature $location';
+  }
+
+  @override
+  String get dontexit => 'Cooler module is not available.';
+
+  @override
+  String currentTemp(Object temp) {
+    return 'currentTemp$temp°c';
+  }
+
+  @override
+  String minTemp(Object cold) {
+    return 'minTemp$cold°c';
+  }
+
+  @override
+  String maxTemp(Object hot) {
+    return 'maxTemp$hot°c';
+  }
+
+  @override
+  String coolerSetTemp(Object hot) {
+    return 'coolerSetTemp$hot°c';
+  }
+
+  @override
+  String get error11 => 'More than one cooler module cannot be added to a location.';
 }

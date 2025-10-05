@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lumaapp/pages/modulePages/location_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import '../../widgets/QR_Scannercode.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/QR_Scannercode.dart';
 import '/utils.dart' as utils;
 //import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter/services.dart';
@@ -42,9 +44,9 @@ Future<List<LocationModel>> fetchLocationModels() async {
 }
 
 class AddProduct extends StatefulWidget {
-  final String mobileNumber;
   final Locationcard;
-  const AddProduct({super.key, required this.Locationcard, required this.mobileNumber});
+  const AddProduct({super.key, required this.Locationcard,
+  });
 
   @override
   State<AddProduct> createState() => _AddLocationOrProductState();
@@ -57,6 +59,19 @@ class _AddLocationOrProductState extends State<AddProduct> {
   TextEditingController textEditingController1 = TextEditingController();
   TextEditingController textEditingController2 = TextEditingController();
   String locationcardname = "";
+  int coler =0;
+  String mobile ='';
+  @override
+  void initState() {
+    super.initState();
+    futureLocationModels = fetchLocationModels();
+    _loadmobile();
+  }
+
+  Future<void> _loadmobile() async {
+    final prefs = await SharedPreferences.getInstance();
+    mobile = (prefs.getString('mobileNumber') ?? null)!;
+  }
 
   Future<void> addLumakeyModule() async {
     final url = Uri.parse('${utils.serverAddress}/products/lumakey/active');
@@ -69,11 +84,12 @@ class _AddLocationOrProductState extends State<AddProduct> {
       body: jsonEncode({
         "slug": textEditingController1.text,
         "active_code": textEditingController2.text,
-        "location_id": widget.Locationcard.location,
+        "location_id": widget.Locationcard.id,
       }),
     );
     if (response.statusCode == 200) {
       Navigator.pop(context);
+      coler++;
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -133,13 +149,13 @@ class _AddLocationOrProductState extends State<AddProduct> {
                       ),
                     ),
                   ),
-                  /*onTap: () => Navigator.pushAndRemoveUntil(
+                  onTap: () => Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AppBarPage(),
+                      builder: (context) => LocationPage(locationcard: widget.Locationcard),
                     ),
                         (route) => false,
-                  ),*/
+                  ),
                 ),
               ],
             ),
@@ -149,6 +165,70 @@ class _AddLocationOrProductState extends State<AddProduct> {
     } else {
       throw Exception(AppLocalizations.of(context)!.error4);
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
+        ),
+        backgroundColor: Colors.white,
+        contentPadding: const EdgeInsets.all(0),
+        content: Material(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            textDirection: TextDirection.rtl,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width * 0.033),
+                child: Text(
+                  message,
+                  textDirection: TextDirection.rtl,
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.043,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.060,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF055712), Color(0xFF80FF92)]),
+                    borderRadius: BorderRadius.circular(
+                        MediaQuery.of(context).size.width * 0.033),
+                    border: Border.all(color: const Color(0xFF0200AB), width: 2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.taiid,
+                      style: const TextStyle(
+                        color: Color(0xFFE8BCB9),
+                        fontSize: 18,
+                        fontFamily: "Sans",
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  /*setState(() {
+                    isLoading = false;
+                  });*/
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> addLumcyModule() async {
@@ -229,7 +309,7 @@ class _AddLocationOrProductState extends State<AddProduct> {
                   onTap: () => Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => LocationPage(locationcard: widget.Locationcard, mobileNumber: widget.mobileNumber),
+                      builder: (context) => LocationPage(locationcard: widget.Locationcard),
                     ),
                         (route) => false,
                   ),
@@ -242,12 +322,6 @@ class _AddLocationOrProductState extends State<AddProduct> {
     } else {
       throw Exception(AppLocalizations.of(context)!.error5);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    futureLocationModels = fetchLocationModels();
   }
 
   /*Future<void> scanQR() async {
@@ -566,7 +640,13 @@ class _AddLocationOrProductState extends State<AddProduct> {
                         if (addDropdownButtonValue == AppLocalizations.of(context)!.lamp) {
                           addLumcyModule();
                         } else {
-                          addLumakeyModule();
+                          if(coler == 1)
+                            {
+                              _showErrorDialog(AppLocalizations.of(context)!.error11);
+                            }
+                          else {
+                            addLumakeyModule();
+                          }
                         }
                       },
                     ),

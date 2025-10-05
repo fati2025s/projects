@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lumaapp/pages/mainPages/home_page.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/bottom_sheet_navigator_extension.dart';
 import '../../widgets/slider_widget.dart';
 import 'package:tn_bottom_sheet_navigator/tn_bottom_sheet_navigator.dart' hide TnBottomSheetSettings;
 import 'package:simple_shadow/simple_shadow.dart';
@@ -9,6 +11,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../mainPages/add_module.dart';
 import '/utils.dart' as utils;
+import 'lumakey_module_list_bottom_sheet_page.dart';
 
 class LumakeyModule {
   final String slug;
@@ -43,13 +46,13 @@ Future<List<LumakeyModule>> fetchLumakeyModules(int locationId) async {
 }
 
 class LocationPage extends StatefulWidget {
-  final String mobileNumber;
+  //final String mobileNumber;
   final locationcard;
 
 
   const LocationPage({
     required this.locationcard,
-    required this.mobileNumber,
+    //required this.mobileNumber,
     super.key,
   });
 
@@ -62,6 +65,7 @@ class _LocationPageState extends State<LocationPage> {
   int _tabIndex = 0;
   late PageController _pageController;
   late List<bool> isSelected = [false, false, false, false];
+  bool on_off = true;
 
   @override
   void initState() {
@@ -113,15 +117,13 @@ class _LocationPageState extends State<LocationPage> {
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => HomePage(mobileNumber: widget.mobileNumber),
+                          builder: (context) => HomePage(),
                         );
                       },
                     ),
                   ),
-
-                  if(widget.locationcard.name == "آشپزخانه")
                   Text(
-                    AppLocalizations.of(context)!.loc4,
+                    widget.locationcard.name,
                     style:  TextStyle(
                       color: isDarkMode
                           ?  Colors.white // رنگ‌های تم تیره
@@ -130,45 +132,12 @@ class _LocationPageState extends State<LocationPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if(widget.locationcard.name == "اتاق خواب")
-                    Text(
-                      AppLocalizations.of(context)!.loc2,
-                      style: TextStyle(
-                        color: isDarkMode
-                            ?  Colors.white // رنگ‌های تم تیره
-                            :  Colors.black,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  if(widget.locationcard.name == "سرویس بهداشتی")
-                    Text(
-                      AppLocalizations.of(context)!.loc1,
-                      style:  TextStyle(
-                        color: isDarkMode
-                            ?  Colors.white // رنگ‌های تم تیره
-                            :  Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  if(widget.locationcard.name == "سالن پذیرایی")
-                    Text(
-                      AppLocalizations.of(context)!.loc3,
-                      style: TextStyle(
-                        color: isDarkMode
-                            ?  Colors.white // رنگ‌های تم تیره
-                            :  Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   Builder(
                     builder: (context) => IconButton(
                       icon: Icon(
                           Icons.add,
                           color: isDarkMode
-                              ?  Colors.white // رنگ‌های تم تیره
+                              ?  Colors.white
                               :  Colors.black,
                           size: 28
                       ),
@@ -177,7 +146,7 @@ class _LocationPageState extends State<LocationPage> {
                           context: context,
                           //isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => AddProduct(Locationcard: widget.locationcard,mobileNumber:widget.mobileNumber),
+                          builder: (context) => AddProduct(Locationcard: widget.locationcard),
                         );
                       },
                     ),
@@ -195,6 +164,8 @@ class _LocationPageState extends State<LocationPage> {
                     imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
                       width: size.width,
+                      margin: EdgeInsets.only(top: size.height * 0.01),
+                      height: size.height * 0.45,
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFFFFF).withOpacity(0.15),
                         borderRadius: BorderRadius.vertical(
@@ -214,244 +185,124 @@ class _LocationPageState extends State<LocationPage> {
                     padding: EdgeInsets.symmetric(horizontal: size.width * 0.042),
                     child: Column(
                       children: [
-                        //SizedBox(height: size.height * 0.020),
-                        SizedBox(height: size.height * 0.030),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  for (int i = 0; i < isSelected.length; i++) {
-                                    isSelected[i] = false;
-                                  }
-                                  isSelected[0] = true;
-                                });
 
-                                BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
-                                  'LumakeyModuleList',
-                                  params: {'id': widget.locationcard.id},
-                                  settings: TnBottomSheetSettings(
-                                    constraints: BoxConstraints(
-                                      maxHeight: size.height * 0.640,
-                                    ),
-                                    isScrollControlled: true,
-                                    isDismisable: true,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: size.width * 0.208,
-                                width: size.width * 0.208,
-                                decoration: BoxDecoration(
-                                  color: isSelected[0]
-                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
-                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isDarkMode
-                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
-                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: isDarkMode
-                                          ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
-                                          :  const Color(0xFFFFFFFF).withOpacity(0.80),
-                                      offset: const Offset(0, 0),
-                                      blurRadius: 20,
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: SimpleShadow(
-                                    color: const Color(0xFF000000),
-                                    opacity: 0.5,
-                                    offset: const Offset(4, 4),
-                                    sigma: 2,
-                                    child: Image.asset(
-                                      'images/modules/AirConditioner.png',
-                                      width: size.width * 0.104,
-                                      height: size.width * 0.104,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            GestureDetector(
-                              child: Container(
-                                height: size.width * 0.208,
-                                width: size.width * 0.208,
-                                decoration: BoxDecoration(
-                                  color: isSelected[1]
-                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
-                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isDarkMode
-                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
-                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: isDarkMode
-                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
-                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: Center(
-                                  child: SimpleShadow(
-                                    color: const Color(0xFF000000),
-                                    opacity: 0.5,
-                                    offset: const Offset(4, 4),
-                                    sigma: 2,
-                                    child: Image(
-                                      image: const AssetImage('images/modules/LightOn.png'),
-                                      width: size.width * 0.104,
-                                      height: size.width * 0.104,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  for (int i = 0; i < isSelected.length; i++) {
-                                    isSelected[i] = false;   // همه خاموش
-                                  }
-                                  isSelected[1] = true;
-                                });
-                                BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
-                                  'LumcyModuleList',
-                                  params: {'id': widget.locationcard.id},
-                                  settings: TnBottomSheetSettings(
-                                    constraints: BoxConstraints(
-                                      maxHeight: size.height * 0.640,
-                                    ),
-                                    isScrollControlled: true,
-                                    isDismisable: true,
-                                  ),
-                                );
-                              },
-                            ),
-                            GestureDetector(
-                              child: Container(
-                                height: size.width * 0.208,
-                                width: size.width * 0.208,
-                                decoration: BoxDecoration(
-                                  color: isSelected[2]
-                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
-                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isDarkMode
-                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
-                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: isDarkMode
-                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
-                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: Center(
-                                  child: SimpleShadow(
-                                    color: const Color(0xFF000000),
-                                    opacity: 0.5,
-                                    offset: const Offset(4, 4),
-                                    sigma: 2,
-                                    child: Image(
-                                      image: const AssetImage('images/modules/TV.png'),
-                                      width: size.width * 0.104,
-                                      height: size.width * 0.104,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  for (int i = 0; i < isSelected.length; i++) {
-                                    isSelected[i] = false;   // همه خاموش
-                                  }
-                                  isSelected[2] = true;
-                                });
-                              },
-                            ),
-                            GestureDetector(
-                              child: Container(
-                                height: size.width * 0.208,
-                                width: size.width * 0.208,
-                                decoration: BoxDecoration(
-                                  color: isSelected[3]
-                                      ? const Color(0xFFC7F8FF).withOpacity(0.8) // رنگ وقتی انتخاب شده
-                                      : const Color(0xFF0000AB).withOpacity(0.8), // رنگ پیش‌فرض
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isDarkMode
-                                        ?  const Color(0xFFFFFFFF).withOpacity(1) // رنگ‌های تم تیره
-                                        :  const Color(0xFF21DB2A).withOpacity(1),  // border همیشه
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: isDarkMode
-                                            ?  const Color(0xFF000000).withOpacity(0.80) // رنگ‌های تم تیره
-                                            :  const Color(0xFFFFFFFF).withOpacity(0.80),
-                                        //color: const Color(0xFF000000).withOpacity(0.5),
-                                        offset: const Offset(0, 0),
-                                        blurRadius: 20)
-                                  ],
-                                ),
-                                child: Center(
-                                  child: SimpleShadow(
-                                    color: const Color(0xFF000000),
-                                    opacity: 0.5,
-                                    offset: const Offset(4, 4),
-                                    sigma: 2,
-                                    child: Image(
-                                      image: const AssetImage('images/modules/Wi-FiRouter.png'),
-                                      width: size.width * 0.104,
-                                      height: size.width * 0.104,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  for (int i = 0; i < isSelected.length; i++) {
-                                    isSelected[i] = false;   // همه خاموش
-                                  }
-                                  isSelected[3] = true;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: size.height * 0.059),
+                        SizedBox(height: size.height * 0.029),
                         Expanded(
                           child: FutureBuilder<List<LumakeyModule>>(
                             future: futureLumakeyModules,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(child: Text('Error: ${snapshot.error}'));
-                              } else {
-                                final lumakeyModules = snapshot.data!;
+                              }
 
-                                if(lumakeyModules.isEmpty){
-                                  return const Center(
+                              if (snapshot.hasError) {
+                                return Center(
                                     child: Text(
-                                      'ماژولی نداری',
-                                      style: TextStyle(
+                                        AppLocalizations.of(context)!.error10(snapshot.error.toString()),
+                                    style: TextStyle(color: Colors.red)
+                                    )
+                                );
+                              }
+
+                              final lumakeyModules = snapshot.data!;
+                              bool isNeutralState = !isSelected.contains(true);
+
+                              if (isNeutralState) {
+
+                                if (lumakeyModules.isNotEmpty) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        textDirection: TextDirection.rtl,
+                                        children: [
+                                          if(widget.locationcard.location == "Kitchen")
+                                          Text(
+                                            AppLocalizations.of(context)!.tempra(AppLocalizations.of(context)!.loc4),
+                                            textDirection: TextDirection.rtl,
+                                            textAlign: TextAlign.right,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Sans",
+                                              fontSize: size.width * 0.050,
+                                              shadows: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.3),
+                                                  offset: const Offset(4, 4),
+                                                  blurRadius: 20,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if(widget.locationcard.location == "Hall")
+                                            Text(
+                                              AppLocalizations.of(context)!.tempra(AppLocalizations.of(context)!.loc3),
+                                              textDirection: TextDirection.rtl,
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: "Sans",
+                                                fontSize: size.width * 0.050,
+                                                shadows: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withOpacity(0.3),
+                                                    offset: const Offset(4, 4),
+                                                    blurRadius: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          if(widget.locationcard.location == "BedRoon")
+                                            Text(
+                                              AppLocalizations.of(context)!.tempra(AppLocalizations.of(context)!.loc2),
+                                              textDirection: TextDirection.rtl,
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: "Sans",
+                                                fontSize: size.width * 0.050,
+                                                shadows: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withOpacity(0.3),
+                                                    offset: const Offset(4, 4),
+                                                    blurRadius: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          if(widget.locationcard.location == "BathRoom")
+                                            Text(
+                                              AppLocalizations.of(context)!.tempra(AppLocalizations.of(context)!.loc1),
+                                              textDirection: TextDirection.rtl,
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: "Sans",
+                                                fontSize: size.width * 0.050,
+                                                shadows: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withOpacity(0.3),
+                                                    offset: const Offset(4, 4),
+                                                    blurRadius: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      SizedBox(height: size.height* 0.05),
+                                        SliderWidget(
+                                          initialVal: lumakeyModules.first.temperature_value,
+                                        ),
+
+
+                                    ],
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.dontexit,
+                                      style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
@@ -459,40 +310,18 @@ class _LocationPageState extends State<LocationPage> {
                                     ),
                                   );
                                 }
-                                else {
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        textDirection: TextDirection.rtl,
-                                        children: [
-                                          Text(
-                                            "دمای آشپزخانه:",
-                                            textDirection: TextDirection.rtl,
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(
-                                              color: const Color(0xFFE8BCB9),
-                                              fontFamily: "Sans",
-                                              fontSize: size.width * 0.050,
-                                              shadows: [
-                                                BoxShadow(
-                                                  color: const Color(0xFFF39F5A).withOpacity(0.3),
-                                                  offset: const Offset(4, 4),
-                                                  blurRadius: 20,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: size.height * 0.030),
-                                      Flexible(
-                                        child: SliderWidget(
-                                          initialVal: lumakeyModules.first.temperature_value,
-                                        ),
-                                      ),
-                                    ],
+                              }
+                              else {
+                                if (isSelected[0]) {
+                                  return LumakeyModuleList(id: widget.locationcard.id);
+
+                                } else if (isSelected[1]) {
+                                  return Center(
+
                                   );
+                                }
+                                else {
+                                  return Container();
                                 }
                               }
                             },

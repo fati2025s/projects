@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -23,11 +24,50 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
   List.generate(6, (index) => TextEditingController());
   final List<FocusNode> otpFocusNodes =
   List.generate(6, (index) => FocusNode());
-
-  //bool register = false;
   bool isLoading = false;
+  late Timer _timer;
+  int _remainingTime = 120;
+
+  String get _formattedTime {
+    int minutes = _remainingTime ~/ 60;
+    int seconds = _remainingTime % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // ✅ توقف تایمر هنگام خروج از صفحه
+    for (var controller in otpControllers) {
+      controller.dispose();
+    }
+    for (var node in otpFocusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _remainingTime = 120; // بازنشانی زمان برای شروع مجدد
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingTime > 0) {
+        setState(() {
+          _remainingTime--;
+        });
+      } else {
+        _timer.cancel();
+      }
+    });
+  }
 
   void _showErrorDialog(String message) {
+    final currentTheme = Theme.of(context);
+    final isDarkMode = currentTheme.brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -35,7 +75,9 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
           borderRadius:
           BorderRadius.circular(MediaQuery.of(context).size.width * 0.033),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode
+            ?  Colors.white // رنگ‌های تم تیره
+            :  Colors.black,
         contentPadding: const EdgeInsets.all(0),
         content: Material(
           color: Colors.transparent,
@@ -51,7 +93,7 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                   textDirection: TextDirection.rtl,
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.width * 0.043,
-                    color: Colors.black87,
+                    color: isDarkMode ? Colors.white70 : Colors.black87,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -96,9 +138,45 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
     return regex.hasMatch(phoneNumber);
   }
 
+  Future<void> _resendCode() async {
+    if (_remainingTime > 0 || isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        // API ارسال مجدد را فراخوانی کنید (فرض می‌شود این API همان لاگین/رجیستر قبلی است)
+        Uri.parse('${utils.serverAddress}/auth/login-register/'),
+        body: json.encode({
+          'mobile': widget.mobileNumber,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        _startTimer();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.ersal)),
+        );
+      } else {
+        _showErrorDialog(AppLocalizations.of(context)!.error1);
+      }
+    } catch (e) {
+      _showErrorDialog(AppLocalizations.of(context)!.error);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   Future<void> _sendOtpCode() async {
     String otpCode = otpControllers.map((c) => c.text).join();
-
+    //final prefs = await SharedPreferences.getInstance();
     setState(() {
       isLoading = true;
     });
@@ -130,6 +208,7 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
         String token = data['token'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
         await prefs.setString('auth_token', token);
         utils.token = prefs.getString('auth_token');
 
@@ -137,10 +216,12 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
           isLoading = false;
         });
 
-        Navigator.of(context).push(
+        _timer.cancel();
+
+        Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-            HomePage(mobileNumber: widget.mobileNumber),
+            HomePage(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
@@ -173,7 +254,9 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
     final s = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
+      body: Stack(
+        children: [
+          Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -280,6 +363,15 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              Text(
+                _formattedTime,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: _remainingTime > 10 ? Colors.white : Colors.red, // رنگ قرمز در ثانیه‌های آخر
+                ),
+              ),
 
               const SizedBox(height: 20),
               SizedBox(height: size.height * 0.2),
@@ -287,15 +379,14 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                 child: SizedBox(
                   width: size.width * 0.75,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _sendOtpCode();
-                    },
+                    onPressed: isLoading ? null : _sendOtpCode,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF39B54A),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
+                      disabledBackgroundColor: const Color(0xFF39B54A).withOpacity(0.5),
                     ),
                     child:  Text(
                       s.taiid,
@@ -310,40 +401,18 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // دکمه "ارسال مجدد رمز"
-              //در مراحل پیشرفته یه تایمر میزارم در صفحه که بشماره رسید 0 دکمه تایید غیر فعال شه
               Center(
                 child: SizedBox(
                   width: size.width * 0.75, // عرض دکمه را ۵۰٪ از عرض صفحه می‌کند
                   child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) =>
-                              OTPVerificationScreen(mobileNumber: widget.mobileNumber,register: widget.register,),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(0.0, 1.0); // شروع انیمیشن از پایین
-                            const end = Offset.zero; // پایان انیمیشن در جایگاه نهایی
-                            const curve = Curves.ease; // نوع انیمیشن (نرم)
-
-                            var tween = Tween(begin: begin, end: end).chain(
-                              CurveTween(curve: curve),
-                            );
-
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
-                    },
+                    onPressed: (_remainingTime > 0 || isLoading) ? null : _resendCode,
                     style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFF39B54A),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
+                      disabledBackgroundColor: const Color(0xFF39B54A).withOpacity(0.5),
                     ),
                     child:  Text(
                       s.ersal,
@@ -360,6 +429,21 @@ class _OtpVerificationState extends State<OTPVerificationScreen> {
             ],
           ),
         ),
+          ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                // رنگ محو (مشکی با شفافیت پایین)
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  // دایره لودینگ سفید
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              ),
+            ),
+              ],
       ),
     );
   }

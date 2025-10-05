@@ -395,7 +395,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      drawerScrimColor: const Color(0xFFD9D9D9).withOpacity(0),
+      drawerScrimColor: const Color(0xFF000000).withOpacity(0),
       backgroundColor: const Color(0xFFD9D9D9).withOpacity(0),
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -453,11 +453,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                             ),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF39F5A).withOpacity(0.8),
+                                color: const Color(0xFF000DFF).withOpacity(0.8),
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFF39F5A).withOpacity(0.5),
+                                    color: Colors.black.withOpacity(0.5),
                                     offset: const Offset(0, 0),
                                     blurRadius: 20,
                                   )
@@ -468,11 +468,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                   vertical: size.width * 0.063,
                                   horizontal: size.width * 0.063,
                                 ),
-                                child: Column(
+                                child: Row(
                                   children: [
-                                    Row(
+                                    Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
-                                      textDirection: TextDirection.rtl,
+                                      //textDirection: TextDirection.rtl,
                                       children: [
                                         Text(
                                           "کولر ${lumakeyModule.slug.replaceAll('0', '').padRight(2, '#')}",
@@ -486,60 +486,61 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: size.height * 0.015),
-                                    Row(
+                                    SizedBox(width: size.width * 0.015),
+                                    Column(
                                       textDirection: TextDirection.rtl,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'NF') ? 1 : 0.75,
+                                          opacity: (lumakeyModule.mode == 'F') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
-                                              width: size.width * 0.313,
-                                              height: size.height * 0.030,
+                                              width: size.width * 0.2,
+                                              height: size.height * 0.2,
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                    colors: [Color(0xFF1D1A39), Color(0xFF451952)]),
+                                                    colors: [Color(0xFF0052A5), Color(0xFFA5D2FF)]),
                                                 borderRadius: BorderRadius.circular(size.width * 0.083),
-                                                border: Border.all(color: const Color(0xFFF39F5A), width: 1),
+                                                border: Border.all(color: const Color(0xFF000DFF), width: 1),
                                               ),
                                               child: Center(
                                                 child: Text(
                                                   textDirection: TextDirection.rtl,
                                                   textAlign: TextAlign.center,
-                                                  "حالت آنلاین و آفلاین",
+                                                  "آفلاین",
                                                   style: TextStyle(
-                                                    color: const Color(0xFFE8BCB9),
+                                                    color: const Color(0xFFFFFFFF),
                                                     fontSize: size.width * 0.025,
                                                     fontFamily: "Sans",
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'NF')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'NF')
+                                            onTap: () => (lumakeyModule.mode != 'F')
+                                                ? toggleModeLumakeyModule(lumakeyModule, 'F')
                                                 : null,
                                           ),
                                         ),
+
                                         Opacity(
                                           opacity: (lumakeyModule.mode == 'N') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
-                                              width: size.width * 0.313,
-                                              height: size.height * 0.030,
+                                              width: size.width * 0.2,
+                                              height: size.height * 0.2,
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                    colors: [Color(0xFF1D1A39), Color(0xFF451952)]),
+                                                    colors: [Color(0xFF0052A5), Color(0xFFA5D2FF)]),
                                                 borderRadius: BorderRadius.circular(size.width * 0.083),
-                                                border: Border.all(color: const Color(0xFFF39F5A), width: 1),
+                                                border: Border.all(color: const Color(0xFF000DFF), width: 1),
                                               ),
                                               child: Center(
                                                 child: Text(
                                                   textDirection: TextDirection.rtl,
                                                   textAlign: TextAlign.center,
-                                                  "حالت آنلاین",
+                                                  "آنلاین",
                                                   style: TextStyle(
-                                                    color: const Color(0xFFE8BCB9),
+                                                    color: const Color(0xFFFFFFFF),
                                                     fontSize: size.width * 0.025,
                                                     fontFamily: "Sans",
                                                   ),
@@ -554,7 +555,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       ],
                                     ),
                                     SizedBox(height: size.height * 0.010),
-                                    Row(
+                                    Column(
                                       textDirection: TextDirection.rtl,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -562,21 +563,21 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                           opacity: (lumakeyModule.mode == 'AUTO') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
-                                              width: size.width * 0.313,
-                                              height: size.height * 0.030,
+                                              width: size.width * 0.2,
+                                              height: size.height * 0.2,
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                    colors: [Color(0xFF1D1A39), Color(0xFF451952)]),
+                                                    colors: [Color(0xFF0052A5), Color(0xFFA5D2FF)]),
                                                 borderRadius: BorderRadius.circular(size.width * 0.083),
-                                                border: Border.all(color: const Color(0xFFF39F5A), width: 1),
+                                                border: Border.all(color: const Color(0xFF000DFF), width: 1),
                                               ),
                                               child: Center(
                                                 child: Text(
                                                   textDirection: TextDirection.rtl,
                                                   textAlign: TextAlign.center,
-                                                  "حالت اتوماتیک",
+                                                  "اتوماتیک",
                                                   style: TextStyle(
-                                                    color: const Color(0xFFE8BCB9),
+                                                    color: const Color(0xFFFFFFFF),
                                                     fontSize: size.width * 0.025,
                                                     fontFamily: "Sans",
                                                   ),
@@ -589,39 +590,39 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                           ),
                                         ),
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'F') ? 1 : 0.75,
+                                          opacity: (lumakeyModule.mode == 'NF') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
-                                              width: size.width * 0.313,
-                                              height: size.height * 0.030,
+                                              width: size.width * 0.2,
+                                              height: size.height * 0.2,
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                    colors: [Color(0xFF1D1A39), Color(0xFF451952)]),
+                                                    colors: [Color(0xFF0052A5), Color(0xFFA5D2FF)]),
                                                 borderRadius: BorderRadius.circular(size.width * 0.083),
-                                                border: Border.all(color: const Color(0xFFF39F5A), width: 1),
+                                                border: Border.all(color: const Color(0xFF000DFF), width: 1),
                                               ),
                                               child: Center(
                                                 child: Text(
                                                   textDirection: TextDirection.rtl,
                                                   textAlign: TextAlign.center,
-                                                  "حالت آفلاین",
+                                                  "آنلاین و آفلاین",
                                                   style: TextStyle(
-                                                    color: const Color(0xFFE8BCB9),
+                                                    color: Colors.white,
                                                     fontSize: size.width * 0.025,
                                                     fontFamily: "Sans",
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'F')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'F')
+                                            onTap: () => (lumakeyModule.mode != 'NF')
+                                                ? toggleModeLumakeyModule(lumakeyModule, 'NF')
                                                 : null,
                                           ),
                                         ),
                                       ],
                                     ),
                                     SizedBox(height: size.height * 0.020),
-                                    Row(
+                                    Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       textDirection: TextDirection.rtl,
                                       children: [

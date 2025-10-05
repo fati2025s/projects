@@ -30,7 +30,7 @@ class _SliderWidgetState extends State<SliderWidget> {
             height: size.width * 0.538,
             child: const Image(
               image: AssetImage(
-                'images/RadialSlider.png',
+                'images/modules/RadialSlider.png',
               ),
               alignment: Alignment.center,
             ),

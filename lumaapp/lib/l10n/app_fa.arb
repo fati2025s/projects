@@ -67,6 +67,43 @@
     "lang": "زبان برنامه",
     "prof": "پروفایل کاربر",
     "update": "پروفایل آپدیت شد",
-    "requiredField": "این فیلد الزامی می باشد"
-
+    "requiredField": "این فیلد الزامی می باشد",
+    "error10": "خطا در دریافت ماژول‌ها:{statusCode}",
+    "@error10": {
+        "placeholders": {
+             "statusCode": {}
+        }
+    },
+    "tempra": "دمای {location}",
+    "@tempra": {
+        "placeholders": {
+                     "location": {}
+                }
+    },
+    "dontexit": "ماژول کولر موجود نیست.",
+    "currentTemp": " دمای حال {temp}°c",
+    "@currentTemp": {
+            "placeholders": {
+                         "temp": {}
+                    }
+    },
+    "minTemp": "سرد ترین دما{cold}°c",
+    "@minTemp": {
+                "placeholders": {
+                             "cold": {}
+                        }
+        },
+    "maxTemp": "گرم ترین دما{hot}°c",
+        "@maxTemp": {
+                    "placeholders": {
+                                 "hot": {}
+                            }
+            },
+    "coolerSetTemp": "دمای عمل کولر{hot}°c",
+            "@coolerSetTemp": {
+                        "placeholders": {
+                                     "hot": {}
+                                }
+                },
+    "error11": "بیش از یک ماژول کولر نمی توان به یک محل افزود"
 }

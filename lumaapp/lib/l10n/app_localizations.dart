@@ -442,6 +442,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This field is required'**
   String get requiredField;
+
+  /// No description provided for @error10.
+  ///
+  /// In en, this message translates to:
+  /// **'Error downloading modules:{statusCode}'**
+  String error10(Object statusCode);
+
+  /// No description provided for @tempra.
+  ///
+  /// In en, this message translates to:
+  /// **'temperature {location}'**
+  String tempra(Object location);
+
+  /// No description provided for @dontexit.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooler module is not available.'**
+  String get dontexit;
+
+  /// No description provided for @currentTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'currentTemp{temp}°c'**
+  String currentTemp(Object temp);
+
+  /// No description provided for @minTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'minTemp{cold}°c'**
+  String minTemp(Object cold);
+
+  /// No description provided for @maxTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'maxTemp{hot}°c'**
+  String maxTemp(Object hot);
+
+  /// No description provided for @coolerSetTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'coolerSetTemp{hot}°c'**
+  String coolerSetTemp(Object hot);
+
+  /// No description provided for @error11.
+  ///
+  /// In en, this message translates to:
+  /// **'More than one cooler module cannot be added to a location.'**
+  String get error11;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
