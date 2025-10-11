@@ -38,8 +38,8 @@ extension BuildContextTnBottomSheetNav on BuildContext {
       case 'LumcyModuleList': // 👈 مسیر جدید ماژول روشنایی
         child = LumcyModuleList(id: locationId);
         break;
-      case 'LumakeyModuleList': // 👈 مسیر جدید ماژول تهویه
-        child = LumakeyModuleList(id: locationId);
+      case 'lumakeyModulesssList': // 👈 مسیر جدید ماژول تهویه
+        child = lumakeyModulesssList(id: locationId);
         break;
       default:
         child = null;

@@ -127,7 +127,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add6 => 'add';
 
   @override
-  String get error4 => 'Failed to add lumakeyModule';
+  String get error4 => 'Failed to add lumakeyModulesss';
 
   @override
   String get error5 => 'Failed to add lumcyModule';
@@ -221,4 +221,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error11 => 'More than one cooler module cannot be added to a location.';
+
+  @override
+  String coler6(Object int) {
+    return 'cooler$int';
+  }
+
+  @override
+  String get onoff => 'Online & Offline';
+
+  @override
+  String get on => 'Online';
+
+  @override
+  String get off => 'Offline';
+
+  @override
+  String get oto => 'Automatic';
+
+  @override
+  String get set => 'Setting';
+
+  @override
+  String get ton => 'sharp round';
+
+  @override
+  String get kon => 'go away';
+
+  @override
+  String get pom => 'pump';
+
+  @override
+  String get mod => 'Management mode';
+
+  @override
+  String get rah => 'High-speed start-up';
+
+  @override
+  String get timecontorol => 'Time control';
+
+  @override
+  String get ontime => 'Time to stay on:';
+
+  @override
+  String get min1 => '15 minutes';
+
+  @override
+  String get min2 => '30 minutes';
+
+  @override
+  String get min3 => '45 minutes';
+
+  @override
+  String get h1 => '1 hour';
+
+  @override
+  String get h2 => '2 hour';
+
+  @override
+  String get h3 => '3 hour';
+
+  @override
+  String get h4 => '4 hour';
+
+  @override
+  String get h5 => '5 hour';
+
+  @override
+  String get h6 => '6 hour';
+
+  @override
+  String get oftime => 'Time to stay on:';
+
+  @override
+  String get temcon => 'Temperature control';
+
+  @override
+  String get hasas => 'Sensitive temperature:';
+
+  @override
+  String get temhash => 'Temperature margin:';
+
+  @override
+  String nor(Object int) {
+    return 'lighting$int';
+  }
+
+  @override
+  String get error20 => 'There is no module to display.';
+
+  @override
+  String get nemidanam => 'List of lighting modules';
 }

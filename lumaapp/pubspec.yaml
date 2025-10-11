@@ -37,6 +37,7 @@ dependencies:
   tn_bottom_sheet_navigator: ^0.0.11
   simple_shadow: ^0.3.1
   sleek_circular_slider: ^2.0.1
+  #ai_barcode_scanner: ^7.1.0
   stroke_text: ^0.0.3
   group_button: ^5.3.4
   #mobile_scanner: ^7.1.2

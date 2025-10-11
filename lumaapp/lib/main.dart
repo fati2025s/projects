@@ -36,8 +36,8 @@ void main() async { // ✅ اضافه کردن async
       builder: (context, params) => LumcyModuleList(id: params['id']),
     ),
     TnBottomSheetRoute(
-      path: 'LumakeyModuleList',
-      builder: (context, params) => LumakeyModuleList(id: params['id']),
+      path: 'lumakeyModulesssList',
+      builder: (context, params) => lumakeyModulesssList(id: params['id']),
     ),
   ]);
 

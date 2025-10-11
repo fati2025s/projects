@@ -48,7 +48,7 @@
     "add4": "Please enter the location of the product.",
     "add5": "Product location type:",
     "add6": "add",
-    "error4": "Failed to add lumakeyModule",
+    "error4": "Failed to add lumakeyModulesss",
     "error5": "Failed to add lumcyModule",
     "lamp": "Lighting module product (Lumsi)",
     "lamp1": "Location of the Lumsey module:",
@@ -105,5 +105,44 @@
                                          "hot": {}
                                     }
                     },
-    "error11": "More than one cooler module cannot be added to a location."
+    "error11": "More than one cooler module cannot be added to a location.",
+    "coler6": "cooler{int}",
+        "@coler6": {
+            "placeholders": {
+                "int": {}
+            }
+        },
+    "onoff": "Online & Offline",
+    "on": "Online",
+    "off": "Offline",
+    "oto": "Automatic",
+    "set": "Setting",
+            "ton": "sharp round",
+            "kon": "go away",
+            "pom": "pump",
+            "mod": "Management mode",
+            "rah": "High-speed start-up",
+            "timecontorol": "Time control",
+            "ontime": "Time to stay on:",
+            "min1": "15 minutes",
+            "min2": "30 minutes",
+            "min3": "45 minutes",
+            "h1": "1 hour",
+            "h2": "2 hour",
+            "h3": "3 hour",
+            "h4": "4 hour",
+            "h5": "5 hour",
+            "h6": "6 hour",
+            "oftime": "Time to stay on:",
+            "temcon": "Temperature control",
+            "hasas": "Sensitive temperature:",
+            "temhash": "Temperature margin:",
+            "nor": "lighting{int}",
+                        "@nor": {
+                            "placeholders": {
+                                "int": {}
+                            }
+                        },
+    "error20": "There is no module to display.",
+    "nemidanam": "List of lighting modules"
 }

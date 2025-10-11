@@ -1,3 +1,4 @@
+//import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -73,7 +74,7 @@ class _AddLocationOrProductState extends State<AddProduct> {
     mobile = (prefs.getString('mobileNumber') ?? null)!;
   }
 
-  Future<void> addLumakeyModule() async {
+  Future<void> addlumakeyModulesss() async {
     final url = Uri.parse('${utils.serverAddress}/products/lumakey/active');
     final response = await http.put(
       url,
@@ -325,23 +326,48 @@ class _AddLocationOrProductState extends State<AddProduct> {
   }
 
   /*Future<void> scanQR() async {
-    final scannedData = await Navigator.push(
+    // استفاده از AiBarcodeScanner به عنوان یک ویجت در یک صفحه جدید (روش پایدار)
+    // این روش وابسته به متدهای استاتیک ناپایدار پکیج نیست و با بیشتر نسخه‌ها کار می‌کند.
+    final String? scannedData = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QrScannerPage()),
+      MaterialPageRoute(
+        builder: (context) => AiBarcodeScanner(
+          onDetect: (BarcodeCapture capture) {
+            String? result;
+            if (capture.barcodes.isNotEmpty) {
+              result = capture.barcodes.first.rawValue;
+            }
+            if (result != null) {
+              Navigator.pop(context, result);
+            }
+          },
+        ),
+      ),
     );
 
-    if (scannedData != null) {
+    if (scannedData != null && scannedData.isNotEmpty) {
       try {
         final data = jsonDecode(scannedData) as Map<String, dynamic>;
+
         if (data.containsKey('slug') && data.containsKey('active_code')) {
-          setState(() {
-            textEditingController1.text = data['slug'];
-            textEditingController2.text = data['active_code'];
+           setState(() {
+            textEditingController1.text = data['slug'].toString();
+            textEditingController2.text = data['active_code'].toString();
           });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('کدهای Slug و Active با موفقیت پر شدند.'), duration: Duration(seconds: 2)),
+          );
+        } else {
+          print('JSON valid but missing "slug" or "active_code".');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('کد QR نامعتبر است: فیلدهای مورد نیاز یافت نشدند.'), duration: Duration(seconds: 3), backgroundColor: Colors.orange),
+          );
         }
       } catch (e) {
-        // اگر JSON معتبر نبود
-        print('Failed to parse JSON.');
+        print('Failed to parse JSON: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('خطا در خواندن کد QR: داده‌ی JSON معتبر نیست.'), duration: Duration(seconds: 3), backgroundColor: Colors.red),
+        );
       }
     }
   }*/
@@ -645,7 +671,7 @@ class _AddLocationOrProductState extends State<AddProduct> {
                               _showErrorDialog(AppLocalizations.of(context)!.error11);
                             }
                           else {
-                            addLumakeyModule();
+                            addlumakeyModulesss();
                           }
                         }
                       },

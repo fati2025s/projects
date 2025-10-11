@@ -326,7 +326,7 @@ abstract class AppLocalizations {
   /// No description provided for @error4.
   ///
   /// In en, this message translates to:
-  /// **'Failed to add lumakeyModule'**
+  /// **'Failed to add lumakeyModulesss'**
   String get error4;
 
   /// No description provided for @error5.
@@ -490,6 +490,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More than one cooler module cannot be added to a location.'**
   String get error11;
+
+  /// No description provided for @coler6.
+  ///
+  /// In en, this message translates to:
+  /// **'cooler{int}'**
+  String coler6(Object int);
+
+  /// No description provided for @onoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Online & Offline'**
+  String get onoff;
+
+  /// No description provided for @on.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get on;
+
+  /// No description provided for @off.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get off;
+
+  /// No description provided for @oto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get oto;
+
+  /// No description provided for @set.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting'**
+  String get set;
+
+  /// No description provided for @ton.
+  ///
+  /// In en, this message translates to:
+  /// **'sharp round'**
+  String get ton;
+
+  /// No description provided for @kon.
+  ///
+  /// In en, this message translates to:
+  /// **'go away'**
+  String get kon;
+
+  /// No description provided for @pom.
+  ///
+  /// In en, this message translates to:
+  /// **'pump'**
+  String get pom;
+
+  /// No description provided for @mod.
+  ///
+  /// In en, this message translates to:
+  /// **'Management mode'**
+  String get mod;
+
+  /// No description provided for @rah.
+  ///
+  /// In en, this message translates to:
+  /// **'High-speed start-up'**
+  String get rah;
+
+  /// No description provided for @timecontorol.
+  ///
+  /// In en, this message translates to:
+  /// **'Time control'**
+  String get timecontorol;
+
+  /// No description provided for @ontime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to stay on:'**
+  String get ontime;
+
+  /// No description provided for @min1.
+  ///
+  /// In en, this message translates to:
+  /// **'15 minutes'**
+  String get min1;
+
+  /// No description provided for @min2.
+  ///
+  /// In en, this message translates to:
+  /// **'30 minutes'**
+  String get min2;
+
+  /// No description provided for @min3.
+  ///
+  /// In en, this message translates to:
+  /// **'45 minutes'**
+  String get min3;
+
+  /// No description provided for @h1.
+  ///
+  /// In en, this message translates to:
+  /// **'1 hour'**
+  String get h1;
+
+  /// No description provided for @h2.
+  ///
+  /// In en, this message translates to:
+  /// **'2 hour'**
+  String get h2;
+
+  /// No description provided for @h3.
+  ///
+  /// In en, this message translates to:
+  /// **'3 hour'**
+  String get h3;
+
+  /// No description provided for @h4.
+  ///
+  /// In en, this message translates to:
+  /// **'4 hour'**
+  String get h4;
+
+  /// No description provided for @h5.
+  ///
+  /// In en, this message translates to:
+  /// **'5 hour'**
+  String get h5;
+
+  /// No description provided for @h6.
+  ///
+  /// In en, this message translates to:
+  /// **'6 hour'**
+  String get h6;
+
+  /// No description provided for @oftime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to stay on:'**
+  String get oftime;
+
+  /// No description provided for @temcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature control'**
+  String get temcon;
+
+  /// No description provided for @hasas.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensitive temperature:'**
+  String get hasas;
+
+  /// No description provided for @temhash.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature margin:'**
+  String get temhash;
+
+  /// No description provided for @nor.
+  ///
+  /// In en, this message translates to:
+  /// **'lighting{int}'**
+  String nor(Object int);
+
+  /// No description provided for @error20.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no module to display.'**
+  String get error20;
+
+  /// No description provided for @nemidanam.
+  ///
+  /// In en, this message translates to:
+  /// **'List of lighting modules'**
+  String get nemidanam;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

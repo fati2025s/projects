@@ -5,7 +5,7 @@ import '/utils.dart' as utils;
 import 'package:group_button/group_button.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
-class LumakeyModule {
+class lumakeyModulesss {
   final String slug;
   bool is_turn_pump;
   bool is_turn_motor;
@@ -22,7 +22,7 @@ class LumakeyModule {
   String mode;
   GroupButtonController controller;
 
-  LumakeyModule({
+  lumakeyModulesss({
     required this.slug,
     required this.is_turn_pump,
     required this.is_turn_motor,
@@ -54,8 +54,8 @@ class LumakeyModule {
     }
   }
 
-  factory LumakeyModule.fromJson(Map<String, dynamic> json) {
-    return LumakeyModule(
+  factory lumakeyModulesss.fromJson(Map<String, dynamic> json) {
+    return lumakeyModulesss(
         slug: json['slug'],
         is_turn_pump: json['is_turn_pump'],
         is_turn_motor: json['is_turn_motor'],
@@ -73,7 +73,7 @@ class LumakeyModule {
   }
 }
 
-Future<List<LumakeyModule>> fetchLumakeyModules(int locationId) async {
+Future<lumakeyModulesss> fetchlumakeyModulessss(int locationId) async {
   final response = await http.get(
     Uri.parse('${utils.serverAddress}/products/lumakey/generics?location=$locationId'),
     headers: {
@@ -82,35 +82,39 @@ Future<List<LumakeyModule>> fetchLumakeyModules(int locationId) async {
   );
   if (response.statusCode == 200) {
     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-    return data.map((json) => LumakeyModule.fromJson(json)).toList();
+    if (data.isNotEmpty) {
+      return lumakeyModulesss.fromJson(data.first); // فقط ماژول اول را برمی‌گردانیم
+    } else {
+      throw Exception('No lumakey module found for this location');
+    }
   } else {
-    throw Exception('Failed to load lumakeyModules');
+    throw Exception('Failed to load lumakey module');
   }
 }
 
-class LumakeyModuleList extends StatefulWidget {
+class lumakeyModulesssList extends StatefulWidget {
   final int id;
 
-  const LumakeyModuleList({
+  const lumakeyModulesssList({
     required this.id,
     super.key,
   });
 
   @override
-  State<LumakeyModuleList> createState() => _LumakeyModuleListState();
+  State<lumakeyModulesssList> createState() => _lumakeyModulesssListState();
 }
 
-class _LumakeyModuleListState extends State<LumakeyModuleList> {
-  late Future<List<LumakeyModule>> futureLumakeyModules;
+class _lumakeyModulesssListState extends State<lumakeyModulesssList> {
+  late Future<lumakeyModulesss> futurelumakeyModulessss;
 
   @override
   void initState() {
     super.initState();
-    futureLumakeyModules = fetchLumakeyModules(widget.id);
+    futurelumakeyModulessss = fetchlumakeyModulessss(widget.id);
   }
 
-  Future<void> turnOnPumpLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> turnOnPumplumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -125,18 +129,18 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_turn_pump = true;
-        lumakeyModule.is_turn_motor = false;
-        lumakeyModule.speed_value = false;
-        lumakeyModule.controller.selectIndex(2);
+        lumakeyModulesss.is_turn_pump = true;
+        lumakeyModulesss.is_turn_motor = false;
+        lumakeyModulesss.speed_value = false;
+        lumakeyModulesss.controller.selectIndex(2);
       });
     } else {
-      throw Exception('Failed to turn on pump lumakeyModule');
+      throw Exception('Failed to turn on pump lumakeyModulesss');
     }
   }
 
-  Future<void> turnOnMotorLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> turnOnMotorlumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -151,18 +155,18 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_turn_pump = true;
-        lumakeyModule.is_turn_motor = true;
-        lumakeyModule.speed_value = false;
-        lumakeyModule.controller.selectIndex(1);
+        lumakeyModulesss.is_turn_pump = true;
+        lumakeyModulesss.is_turn_motor = true;
+        lumakeyModulesss.speed_value = false;
+        lumakeyModulesss.controller.selectIndex(1);
       });
     } else {
-      throw Exception('Failed to turn on Motor lumakeyModule');
+      throw Exception('Failed to turn on Motor lumakeyModulesss');
     }
   }
 
-  Future<void> turnOnSpeedValueLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> turnOnSpeedValuelumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -177,18 +181,18 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_turn_pump = true;
-        lumakeyModule.is_turn_motor = true;
-        lumakeyModule.speed_value = true;
-        lumakeyModule.controller.selectIndex(0);
+        lumakeyModulesss.is_turn_pump = true;
+        lumakeyModulesss.is_turn_motor = true;
+        lumakeyModulesss.speed_value = true;
+        lumakeyModulesss.controller.selectIndex(0);
       });
     } else {
-      throw Exception('Failed to turn on speed lumakeyModule');
+      throw Exception('Failed to turn on speed lumakeyModulesss');
     }
   }
 
-  Future<void> turnOffLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> turnOfflumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -203,18 +207,18 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_turn_pump = false;
-        lumakeyModule.is_turn_motor = false;
-        lumakeyModule.speed_value = false;
-        lumakeyModule.controller.unselectAll();
+        lumakeyModulesss.is_turn_pump = false;
+        lumakeyModulesss.is_turn_motor = false;
+        lumakeyModulesss.speed_value = false;
+        lumakeyModulesss.controller.unselectAll();
       });
     } else {
-      throw Exception('Failed to turn off lumakeyModule');
+      throw Exception('Failed to turn off lumakeyModulesss');
     }
   }
 
-  Future<void> toggleEfficientSetupLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleEfficientSetuplumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -222,20 +226,20 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'efficient_setup': !lumakeyModule.efficient_setup,
+        'efficient_setup': !lumakeyModulesss.efficient_setup,
       }),
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.efficient_setup = !lumakeyModule.efficient_setup;
+        lumakeyModulesss.efficient_setup = !lumakeyModulesss.efficient_setup;
       });
     } else {
-      throw Exception('Failed to toggle efficient_setup lumakeyModule');
+      throw Exception('Failed to toggle efficient_setup lumakeyModulesss');
     }
   }
 
-  Future<void> toggleIsOnTemperatureLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleIsOnTemperaturelumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -243,21 +247,21 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'is_on_temperature': !lumakeyModule.is_on_temperature,
+        'is_on_temperature': !lumakeyModulesss.is_on_temperature,
       }),
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_on_temperature = !lumakeyModule.is_on_temperature;
+        lumakeyModulesss.is_on_temperature = !lumakeyModulesss.is_on_temperature;
       });
     } else {
-      throw Exception('Failed to toggle is_on_temperature lumakeyModule');
+      throw Exception('Failed to toggle is_on_temperature lumakeyModulesss');
     }
   }
 
-  Future<void> toggleTemperatureMarginLumakeyModule(
-      LumakeyModule lumakeyModule, double temperature_margin) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleTemperatureMarginlumakeyModulesss(
+      lumakeyModulesss lumakeyModulesss, double temperature_margin) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
@@ -268,15 +272,15 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.temperature_margin = temperature_margin;
+        lumakeyModulesss.temperature_margin = temperature_margin;
       });
     } else {
-      throw Exception('Failed to toggle temperature_margin lumakeyModule');
+      throw Exception('Failed to toggle temperature_margin lumakeyModulesss');
     }
   }
 
-  Future<void> toggleSensitiveValueLumakeyModule(LumakeyModule lumakeyModule, double sensitive_value) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleSensitiveValuelumakeyModulesss(lumakeyModulesss lumakeyModulesss, double sensitive_value) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
@@ -287,15 +291,15 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.sensitive_value = sensitive_value;
+        lumakeyModulesss.sensitive_value = sensitive_value;
       });
     } else {
-      throw Exception('Failed to toggle sensitive_value lumakeyModule');
+      throw Exception('Failed to toggle sensitive_value lumakeyModulesss');
     }
   }
 
-  Future<void> toggleIsOnTimerLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleIsOnTimerlumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(
       url,
       headers: {
@@ -303,20 +307,20 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'is_on_timer': !lumakeyModule.is_on_timer,
+        'is_on_timer': !lumakeyModulesss.is_on_timer,
       }),
     );
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_on_timer = !lumakeyModule.is_on_timer;
+        lumakeyModulesss.is_on_timer = !lumakeyModulesss.is_on_timer;
       });
     } else {
-      throw Exception('Failed to toggle is_on_timer lumakeyModule');
+      throw Exception('Failed to toggle is_on_timer lumakeyModulesss');
     }
   }
 
-  Future<void> toggleOnTimeLumakeyModule(LumakeyModule lumakeyModule, int on_time) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleOnTimelumakeyModulesss(lumakeyModulesss lumakeyModulesss, int on_time) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
@@ -327,15 +331,15 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.on_time = on_time;
+        lumakeyModulesss.on_time = on_time;
       });
     } else {
-      throw Exception('Failed to toggle on_time lumakeyModule');
+      throw Exception('Failed to toggle on_time lumakeyModulesss');
     }
   }
 
-  Future<void> toggleOffTimeLumakeyModule(LumakeyModule lumakeyModule, int off_time) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleOffTimelumakeyModulesss(lumakeyModulesss lumakeyModulesss, int off_time) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
@@ -346,15 +350,15 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.off_time = off_time;
+        lumakeyModulesss.off_time = off_time;
       });
     } else {
-      throw Exception('Failed to toggle off_time lumakeyModule');
+      throw Exception('Failed to toggle off_time lumakeyModulesss');
     }
   }
 
-  Future<void> toggleModeLumakeyModule(LumakeyModule lumakeyModule, String mode) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleModelumakeyModulesss(lumakeyModulesss lumakeyModulesss, String mode) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
@@ -365,29 +369,29 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.mode = mode;
+        lumakeyModulesss.mode = mode;
       });
     } else {
-      throw Exception('Failed to toggle mode lumakeyModule');
+      throw Exception('Failed to toggle mode lumakeyModulesss');
     }
   }
 
-  Future<void> toggleIsApModeLumakeyModule(LumakeyModule lumakeyModule) async {
-    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModule.slug}');
+  Future<void> toggleIsApModelumakeyModulesss(lumakeyModulesss lumakeyModulesss) async {
+    final url = Uri.parse('${utils.serverAddress}/products/lumakey/generics/${lumakeyModulesss.slug}');
     final response = await http.put(url,
         headers: {
           'Authorization': 'Token ${utils.token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'is_ap_mode': !lumakeyModule.is_ap_mode,
+          'is_ap_mode': !lumakeyModulesss.is_ap_mode,
         }));
     if (response.statusCode == 200) {
       setState(() {
-        lumakeyModule.is_ap_mode = !lumakeyModule.is_ap_mode;
+        lumakeyModulesss.is_ap_mode = !lumakeyModulesss.is_ap_mode;
       });
     } else {
-      throw Exception('Failed to toggle is_ap_mode lumakeyModule');
+      throw Exception('Failed to toggle is_ap_mode lumakeyModulesss');
     }
   }
 
@@ -433,19 +437,15 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
               ),
               SizedBox(height: size.height * 0.015),
               Expanded(
-                child: FutureBuilder<List<LumakeyModule>>(
-                  future: futureLumakeyModules,
+                child: FutureBuilder<lumakeyModulesss>(
+                  future: futurelumakeyModulessss,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      final lumakeyModules = snapshot.data!;
-                      return ListView.builder(
-                        itemCount: lumakeyModules.length,
-                        itemBuilder: (context, index) {
-                          final lumakeyModule = lumakeyModules[index];
+                      final lumakeyModulesss = snapshot.data!;
                           return Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: size.height * 0.015,
@@ -475,7 +475,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       //textDirection: TextDirection.rtl,
                                       children: [
                                         Text(
-                                          "کولر ${lumakeyModule.slug.replaceAll('0', '').padRight(2, '#')}",
+                                          "کولر ${lumakeyModulesss.slug.replaceAll('0', '').padRight(2, '#')}",
                                           textDirection: TextDirection.rtl,
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
@@ -492,7 +492,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'F') ? 1 : 0.75,
+                                          opacity: (lumakeyModulesss.mode == 'F') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
                                               width: size.width * 0.2,
@@ -516,14 +516,14 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'F')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'F')
+                                            onTap: () => (lumakeyModulesss.mode != 'F')
+                                                ? toggleModelumakeyModulesss(lumakeyModulesss, 'F')
                                                 : null,
                                           ),
                                         ),
 
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'N') ? 1 : 0.75,
+                                          opacity: (lumakeyModulesss.mode == 'N') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
                                               width: size.width * 0.2,
@@ -547,8 +547,8 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'N')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'N')
+                                            onTap: () => (lumakeyModulesss.mode != 'N')
+                                                ? toggleModelumakeyModulesss(lumakeyModulesss, 'N')
                                                 : null,
                                           ),
                                         )
@@ -560,7 +560,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'AUTO') ? 1 : 0.75,
+                                          opacity: (lumakeyModulesss.mode == 'AUTO') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
                                               width: size.width * 0.2,
@@ -584,13 +584,13 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'AUTO')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'AUTO')
+                                            onTap: () => (lumakeyModulesss.mode != 'AUTO')
+                                                ? toggleModelumakeyModulesss(lumakeyModulesss, 'AUTO')
                                                 : null,
                                           ),
                                         ),
                                         Opacity(
-                                          opacity: (lumakeyModule.mode == 'NF') ? 1 : 0.75,
+                                          opacity: (lumakeyModulesss.mode == 'NF') ? 1 : 0.75,
                                           child: GestureDetector(
                                             child: Container(
                                               width: size.width * 0.2,
@@ -614,8 +614,8 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                 ),
                                               ),
                                             ),
-                                            onTap: () => (lumakeyModule.mode != 'NF')
-                                                ? toggleModeLumakeyModule(lumakeyModule, 'NF')
+                                            onTap: () => (lumakeyModulesss.mode != 'NF')
+                                                ? toggleModelumakeyModulesss(lumakeyModulesss, 'NF')
                                                 : null,
                                           ),
                                         ),
@@ -639,19 +639,19 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       ],
                                     ),
                                     SizedBox(height: size.height * 0.015),
-                                    (lumakeyModule.mode != 'F')
+                                    (lumakeyModulesss.mode != 'F')
                                         ? GroupButton(
                                       isRadio: true,
                                       onSelected: (value, index, isSelected) {
                                         isSelected
                                             ? index == 2
-                                            ? turnOnPumpLumakeyModule(lumakeyModule)
+                                            ? turnOnPumplumakeyModulesss(lumakeyModulesss)
                                             : index == 1
-                                            ? turnOnMotorLumakeyModule(lumakeyModule)
-                                            : turnOnSpeedValueLumakeyModule(lumakeyModule)
-                                            : turnOffLumakeyModule(lumakeyModule);
+                                            ? turnOnMotorlumakeyModulesss(lumakeyModulesss)
+                                            : turnOnSpeedValuelumakeyModulesss(lumakeyModulesss)
+                                            : turnOfflumakeyModulesss(lumakeyModulesss);
                                       },
-                                      controller: lumakeyModule.controller,
+                                      controller: lumakeyModulesss.controller,
                                       enableDeselect: true,
                                       options: GroupButtonOptions(
                                         selectedTextStyle: TextStyle(
@@ -687,11 +687,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                       buttons: [
                                         'دور تند',
                                         'دور کند',
-                                        if (lumakeyModule.mode != 'AUTO') 'پمپ',
+                                        if (lumakeyModulesss.mode != 'AUTO') 'پمپ',
                                       ],
                                     )
                                         : Opacity(
-                                      opacity: (lumakeyModule.is_ap_mode) ? 1 : 0.75,
+                                      opacity: (lumakeyModulesss.is_ap_mode) ? 1 : 0.75,
                                       child: GestureDetector(
                                         child: Container(
                                           width: size.width * 0.313,
@@ -716,13 +716,13 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                             ),
                                           ),
                                         ),
-                                        onTap: () => toggleIsApModeLumakeyModule(lumakeyModule),
+                                        onTap: () => toggleIsApModelumakeyModulesss(lumakeyModulesss),
                                       ),
                                     ),
                                     SizedBox(height: size.height * 0.015),
-                                    if (lumakeyModule.mode != 'F')
+                                    if (lumakeyModulesss.mode != 'F')
                                       Opacity(
-                                        opacity: (lumakeyModule.efficient_setup) ? 1 : 0.75,
+                                        opacity: (lumakeyModulesss.efficient_setup) ? 1 : 0.75,
                                         child: GestureDetector(
                                           child: Container(
                                             width: size.width * 0.313,
@@ -746,11 +746,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                               ),
                                             ),
                                           ),
-                                          onTap: () => toggleEfficientSetupLumakeyModule(lumakeyModule),
+                                          onTap: () => toggleEfficientSetuplumakeyModulesss(lumakeyModulesss),
                                         ),
                                       ),
                                     SizedBox(height: size.height * 0.015),
-                                    if (lumakeyModule.mode == 'AUTO')
+                                    if (lumakeyModulesss.mode == 'AUTO')
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         textDirection: TextDirection.rtl,
@@ -781,14 +781,14 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       offset: const Offset(4, 4),
                                                       sigma: 2,
                                                       child: Image(
-                                                        image: AssetImage((lumakeyModule.is_on_timer)
+                                                        image: AssetImage((lumakeyModulesss.is_on_timer)
                                                             ? 'images/ToggleOn.png'
                                                             : 'images/ToggleOff.png'),
                                                         width: size.width * 0.063,
                                                         height: size.width * 0.063,
                                                       ),
                                                     ),
-                                                    onTap: () => toggleIsOnTimerLumakeyModule(lumakeyModule),
+                                                    onTap: () => toggleIsOnTimerlumakeyModulesss(lumakeyModulesss),
                                                   ),
                                                 ],
                                               ),
@@ -837,7 +837,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       iconDisabledColor: const Color(0xFFF39F5A),
                                                       iconEnabledColor: const Color(0xFFF39F5A),
                                                       isExpanded: true,
-                                                      value: lumakeyModule.on_time,
+                                                      value: lumakeyModulesss.on_time,
                                                       items: const [
                                                         DropdownMenuItem(
                                                           value: 15,
@@ -913,11 +913,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                         ),
                                                       ],
                                                       underline: const Text(''),
-                                                      onChanged: (lumakeyModule.is_on_timer)
+                                                      onChanged: (lumakeyModulesss.is_on_timer)
                                                           ? (newValue) {
                                                         if (newValue != null) {
-                                                          toggleOnTimeLumakeyModule(
-                                                              lumakeyModule, newValue);
+                                                          toggleOnTimelumakeyModulesss(
+                                                              lumakeyModulesss, newValue);
                                                         }
                                                       }
                                                           : null,
@@ -970,7 +970,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       iconDisabledColor: const Color(0xFFF39F5A),
                                                       iconEnabledColor: const Color(0xFFF39F5A),
                                                       isExpanded: true,
-                                                      value: lumakeyModule.off_time,
+                                                      value: lumakeyModulesss.off_time,
                                                       items: const [
                                                         DropdownMenuItem(
                                                           value: 15,
@@ -1046,11 +1046,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                         ),
                                                       ],
                                                       underline: const Text(''),
-                                                      onChanged: (lumakeyModule.is_on_timer)
+                                                      onChanged: (lumakeyModulesss.is_on_timer)
                                                           ? (newValue) {
                                                         if (newValue != null) {
-                                                          toggleOffTimeLumakeyModule(
-                                                              lumakeyModule, newValue);
+                                                          toggleOffTimelumakeyModulesss(
+                                                              lumakeyModulesss, newValue);
                                                         }
                                                       }
                                                           : null,
@@ -1086,7 +1086,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       offset: const Offset(4, 4),
                                                       sigma: 2,
                                                       child: Image(
-                                                        image: AssetImage((lumakeyModule.is_on_temperature)
+                                                        image: AssetImage((lumakeyModulesss.is_on_temperature)
                                                             ? 'images/ToggleOn.png'
                                                             : 'images/ToggleOff.png'),
                                                         width: size.width * 0.063,
@@ -1094,7 +1094,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       ),
                                                     ),
                                                     onTap: () =>
-                                                        toggleIsOnTemperatureLumakeyModule(lumakeyModule),
+                                                        toggleIsOnTemperaturelumakeyModulesss(lumakeyModulesss),
                                                   ),
                                                 ],
                                               ),
@@ -1143,7 +1143,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       iconDisabledColor: const Color(0xFFF39F5A),
                                                       iconEnabledColor: const Color(0xFFF39F5A),
                                                       isExpanded: true,
-                                                      value: lumakeyModule.sensitive_value,
+                                                      value: lumakeyModulesss.sensitive_value,
                                                       items: List.generate(13, (index) {
                                                         return DropdownMenuItem<double>(
                                                           value: index + 16,
@@ -1151,11 +1151,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                         );
                                                       }),
                                                       underline: const Text(''),
-                                                      onChanged: (lumakeyModule.is_on_temperature)
+                                                      onChanged: (lumakeyModulesss.is_on_temperature)
                                                           ? (newValue) {
                                                         if (newValue != null) {
-                                                          toggleSensitiveValueLumakeyModule(
-                                                              lumakeyModule, newValue);
+                                                          toggleSensitiveValuelumakeyModulesss(
+                                                              lumakeyModulesss, newValue);
                                                         }
                                                       }
                                                           : null,
@@ -1208,7 +1208,7 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                       iconDisabledColor: const Color(0xFFF39F5A),
                                                       iconEnabledColor: const Color(0xFFF39F5A),
                                                       isExpanded: true,
-                                                      value: lumakeyModule.temperature_margin,
+                                                      value: lumakeyModulesss.temperature_margin,
                                                       items: List.generate(5, (index) {
                                                         return DropdownMenuItem<double>(
                                                           value: index + 1,
@@ -1216,11 +1216,11 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                                                         );
                                                       }),
                                                       underline: const Text(''),
-                                                      onChanged: (lumakeyModule.is_on_temperature)
+                                                      onChanged: (lumakeyModulesss.is_on_temperature)
                                                           ? (newValue) {
                                                         if (newValue != null) {
-                                                          toggleTemperatureMarginLumakeyModule(
-                                                              lumakeyModule, newValue);
+                                                          toggleTemperatureMarginlumakeyModulesss(
+                                                              lumakeyModulesss, newValue);
                                                         }
                                                       }
                                                           : null,
@@ -1237,12 +1237,10 @@ class _LumakeyModuleListState extends State<LumakeyModuleList> {
                               ),
                             ),
                           );
-                        },
-                      );
-                    }
+                    };
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

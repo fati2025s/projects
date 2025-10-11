@@ -221,4 +221,95 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get error11 => 'بیش از یک ماژول کولر نمی توان به یک محل افزود';
+
+  @override
+  String coler6(Object int) {
+    return 'کولر$int';
+  }
+
+  @override
+  String get onoff => 'آنلاین و آفلاین';
+
+  @override
+  String get on => 'آنلاین';
+
+  @override
+  String get off => 'آفلاین';
+
+  @override
+  String get oto => 'اتوماتیک';
+
+  @override
+  String get set => 'تنظیمات';
+
+  @override
+  String get ton => 'دور تند';
+
+  @override
+  String get kon => 'دور کند';
+
+  @override
+  String get pom => 'پمپ';
+
+  @override
+  String get mod => 'حالت مدیریت';
+
+  @override
+  String get rah => 'راه اندازی با دور تند';
+
+  @override
+  String get timecontorol => 'کنترل زمانی';
+
+  @override
+  String get ontime => 'زمان روشن ماندن:';
+
+  @override
+  String get min1 => '15 دقیقه';
+
+  @override
+  String get min2 => '30 دقیقه';
+
+  @override
+  String get min3 => '45 دقیقه';
+
+  @override
+  String get h1 => '1 ساعت';
+
+  @override
+  String get h2 => '2 ساعت';
+
+  @override
+  String get h3 => '3 ساعت';
+
+  @override
+  String get h4 => '4 ساعت';
+
+  @override
+  String get h5 => '5 ساعت';
+
+  @override
+  String get h6 => '6 ساعت';
+
+  @override
+  String get oftime => 'زمان خاموش ماندن:';
+
+  @override
+  String get temcon => 'کنترل دمایی';
+
+  @override
+  String get hasas => 'دمای حساس:';
+
+  @override
+  String get temhash => 'حاشیه دما:';
+
+  @override
+  String nor(Object int) {
+    return 'روشنایی$int';
+  }
+
+  @override
+  String get error20 => 'ماژولی برای نمایش وجود ندارد.';
+
+  @override
+  String get nemidanam => 'لیست ماژول های روشنایی';
 }
