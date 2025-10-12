@@ -312,4 +312,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nemidanam => 'List of lighting modules';
+
+  @override
+  String get doncoler => 'Cooler module is not available';
 }

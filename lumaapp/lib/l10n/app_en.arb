@@ -144,5 +144,6 @@
                             }
                         },
     "error20": "There is no module to display.",
-    "nemidanam": "List of lighting modules"
+    "nemidanam": "List of lighting modules",
+    "doncoler": "Cooler module is not available"
 }

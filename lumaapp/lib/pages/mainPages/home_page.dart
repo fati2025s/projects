@@ -14,7 +14,7 @@ import '../../widgets/bottom_sheet_navigator_extension.dart';
 import '../../widgets/tem.dart' show AppTheme, ThemeManager;
 import '../modulePages/location_page.dart';
 import '../startPages/loginandsignup_1.dart';
-
+import 'package:shimmer/shimmer.dart'; // ✅ اضافه شدن پکیج Shimmer
 
 class LocationCardModel {
   final int id;
@@ -39,13 +39,13 @@ class LocationCardModel {
 }
 
 class HomePage extends StatefulWidget {
-  //final String mobileNumber;
   const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
+// تابع API برای دریافت لیست مکان‌ها
 Future<List<LocationCardModel>> fetchLocationCards() async {
   final response = await http.get(
     Uri.parse('${utils.serverAddress}/products/location/generics'),
@@ -57,7 +57,8 @@ Future<List<LocationCardModel>> fetchLocationCards() async {
     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
     return data.map((json) => LocationCardModel.fromJson(json)).toList();
   } else {
-    throw Exception('Failed to load cards');
+    // در صورت بروز خطا، یک Exception پرتاب شود تا توسط FutureBuilder مدیریت شود
+    throw Exception('Failed to load cards. Status: ${response.statusCode} | Token: ${utils.token}');
   }
 }
 
@@ -68,25 +69,18 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> modulePlacements = [];
   late Future<List<LocationCardModel>> futureLocationCards;
   String mobile = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    futureLocationCards = fetchLocationCards();
-    _loadUsername();
-    _loadmobile();
+    _loadInitialData();
   }
 
   Future<void> _loadmobile() async{
     final prefs = await SharedPreferences.getInstance();
-    mobile = (prefs.getString('mobileNumber') ?? null)!;
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+    mobile = prefs.getString('mobileNumber') ?? '';
   }
 
   Future<void> _loadUsername() async {
@@ -97,6 +91,98 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> _loadTokenAndSetGlobally() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    if (token.isNotEmpty) {
+      utils.token = token;
+    }
+  }
+
+  Future<void> _loadInitialData() async {
+    await _loadTokenAndSetGlobally();
+    await _loadmobile();
+    await _loadUsername();
+
+    setState(() {
+      futureLocationCards = fetchLocationCards();
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // ویجت کمکی: ساختار یک کارت مکان مبهم (Placeholder)
+  Widget _buildShimmerLoadingCard(Size size, bool isDarkMode) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: size.height * 0.024,
+        bottom: size.height * 0.034,
+        right: size.width * 0.063,
+        left: size.width * 0.031,
+      ),
+      child: Container(
+        height: size.height * 0.256,
+        width: size.width * 0.333,
+        // رنگ پایه برایPlaceholder، Shimmer افکت را روی آن اعمال می‌کند
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.white12 : Colors.grey[200],
+          borderRadius: BorderRadius.all(
+            Radius.circular(size.width * 0.042),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Placeholder برای عکس/آیکون
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
+              child: Container(
+                height: 80,
+                width: size.width * 0.25,
+                color: isDarkMode ? Colors.white24 : Colors.grey[300], // رنگ داخلی
+              ),
+            ),
+            // Placeholder برای نام
+            Container(
+              height: 15,
+              width: size.width * 0.2,
+              color: isDarkMode ? Colors.white24 : Colors.grey[300],
+            ),
+            const SizedBox(height: 8),
+            // Placeholder برای تعداد
+            Container(
+              height: 10,
+              width: size.width * 0.15,
+              color: isDarkMode ? Colors.white24 : Colors.grey[300],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ویجت کمکی: لیست Shimmer برای حالت بارگذاری
+  Widget _buildLoadingShimmer(Size size, bool isDarkMode) {
+    return Shimmer.fromColors(
+      // تنظیم رنگ‌ها بر اساس تم تیره/روشن
+      baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+      highlightColor: isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        reverse: true,
+        itemCount: 3, // نمایش 3 کارت مبهم
+        itemBuilder: (context, index) {
+          return _buildShimmerLoadingCard(size, isDarkMode);
+        },
+      ),
+    );
+  }
 
 
   @override
@@ -133,9 +219,8 @@ class _HomePageState extends State<HomePage> {
               height: 200,
               width: double.infinity,
               color: isDarkMode
-                  ?  Color(0xFF00B04F)
-                  :  Color(0xFF21DB2A),
-              //color: const Color(0xFF00B04F),
+                  ?  const Color(0xFF00B04F)
+                  :  const Color(0xFF21DB2A),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -166,14 +251,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                     IconButton(
                       icon: Icon(
-                        // نمایش آیکون مناسب بر اساس تم فعلی
                         themeManager.currentTheme == AppTheme.dark
                             ? Icons.light_mode_outlined
                             : Icons.dark_mode_outlined,
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        // ✅ فراخوانی متد toggleTheme
                         themeManager.toggleTheme();
                       },
                     ),
@@ -204,13 +287,13 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(Icons.edit, color: isDarkMode
-                                ?  Colors.white // رنگ‌های تم تیره
+                                ?  Colors.white
                                 :  Colors.black,),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Text(
                               s.edit,
                               style: TextStyle(color: isDarkMode
-                                  ?  Colors.white // رنگ‌های تم تیره
+                                  ?  Colors.white
                                   :  Colors.black, fontSize: 18),
                             ),
                           ],
@@ -224,11 +307,11 @@ class _HomePageState extends State<HomePage> {
                         s.logout,
                         textAlign: TextAlign.left,
                         style: TextStyle(color: isDarkMode
-                            ?  Colors.white // رنگ‌های تم تیره
+                            ?  Colors.white
                             :  Colors.black),
                       ),
                       leading: Icon(Icons.logout, color: isDarkMode
-                          ?  Colors.white // رنگ‌های تم تیره
+                          ?  Colors.white
                           :  Colors.black),
                       onTap: () {
                         Navigator.of(context).push(
@@ -236,9 +319,9 @@ class _HomePageState extends State<HomePage> {
                             pageBuilder: (context, animation, secondaryAnimation) =>
                             const LoginSignupScreen(),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              const begin = Offset(0.0, 1.0); // شروع انیمیشن از پایین
-                              const end = Offset.zero; // پایان انیمیشن در جایگاه نهایی
-                              const curve = Curves.ease; // نوع انیمیشن (نرم)
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.ease;
 
                               var tween = Tween(begin: begin, end: end).chain(
                                 CurveTween(curve: curve),
@@ -254,16 +337,16 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                     const Divider(color: Colors.white54),
-                     ListTile(
+                    ListTile(
                       title: Text(
                         s.delacco,
                         textAlign: TextAlign.left,
                         style: TextStyle(color: isDarkMode
-                            ?  Colors.white // رنگ‌های تم تیره
+                            ?  Colors.white
                             :  Colors.black),
                       ),
                       leading: Icon(Icons.delete, color: isDarkMode
-                          ?  Colors.white // رنگ‌های تم تیره
+                          ?  Colors.white
                           :  Colors.black),
                     ),
                     const SizedBox(height: 20),
@@ -277,49 +360,47 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Directionality(
         textDirection: TextDirection.ltr,
         child: CircleNavBar(
-        activeIcons: [
-          Image.asset(
-            'images/bottomNavigationBar/HomeIconMenu.png',
-            width: 30,
-            height: 30,
-          ),
-          Image.asset(
-            'images/bottomNavigationBar/OnlineSupportIconMenu.png',
-            width: 30,
-            height: 30,
-          ),
-        ],
-        inactiveIcons: [
-          Image.asset(
-            'images/bottomNavigationBar/HomeIconMenu.png',
-            width: 30,
-            height: 30,
-            //color: Colors.white70,
-          ),
-          Image.asset(
-            'images/bottomNavigationBar/OnlineSupportIconMenu.png',
-            width: 30,
-            height: 30,
-            //color: Colors.white70,
-          ),
-        ],
+          activeIcons: [
+            Image.asset(
+              'images/bottomNavigationBar/HomeIconMenu.png',
+              width: 30,
+              height: 30,
+            ),
+            Image.asset(
+              'images/bottomNavigationBar/OnlineSupportIconMenu.png',
+              width: 30,
+              height: 30,
+            ),
+          ],
+          inactiveIcons: [
+            Image.asset(
+              'images/bottomNavigationBar/HomeIconMenu.png',
+              width: 30,
+              height: 30,
+            ),
+            Image.asset(
+              'images/bottomNavigationBar/OnlineSupportIconMenu.png',
+              width: 30,
+              height: 30,
+            ),
+          ],
           color: isDarkMode
-              ?  const Color(0xFF0100C4)// رنگ‌های تم تیره
+              ?  const Color(0xFF0100C4)
               :  const Color(0xFF3F5FFF),
-        height: 60,
-        circleWidth: 60,
-        circleColor: isDarkMode
-            ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
-            :  const Color(0xFF21DB2A).withOpacity(0.80),
-        activeIndex: _tabIndex,
-        onTap: (index) {
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.ease,
-          );
-        },
-      ),
+          height: 60,
+          circleWidth: 60,
+          circleColor: isDarkMode
+              ?  const Color(0xFFBDFFBD).withOpacity(0.80)
+              :  const Color(0xFF21DB2A).withOpacity(0.80),
+          activeIndex: _tabIndex,
+          onTap: (index) {
+            _pageController.animateToPage(
+              index,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          },
+        ),
       ),
     );
   }
@@ -333,7 +414,7 @@ class _HomePageState extends State<HomePage> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: isDarkMode
-              ? const [const Color(0xFF000AAB), Colors.black] // رنگ‌های تم تیره
+              ? const [Color(0xFF000AAB), Colors.black]
               : const [Color(0xFF3F5FFF), Colors.white],
           stops: const [0.4, 1],
         ),
@@ -348,12 +429,12 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _buildModulePlacement(),
                 const SizedBox(height: 30),
-                 Align(
+                Align(
                   alignment: Alignment.centerRight,
                   child: Text(
                     AppLocalizations.of(context)!.module,
                     style: TextStyle(color: isDarkMode
-                        ?  Colors.white // رنگ‌های تم تیره
+                        ?  Colors.white
                         :  Colors.black, fontSize: 20),
                   ),
                 ),
@@ -411,18 +492,18 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(
                   Icons.menu,
                   color: isDarkMode
-                      ?  Colors.white // رنگ‌های تم تیره
+                      ?  Colors.white
                       :  Colors.black,
                   size: 35
               ),
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
-           Text(
+          Text(
             s.home,
             style: TextStyle(
               color: isDarkMode
-                  ?  Colors.white // رنگ‌های تم تیره
+                  ?  Colors.white
                   :  Colors.black,
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -438,6 +519,128 @@ class _HomePageState extends State<HomePage> {
     final currentTheme = Theme.of(context);
     final isDarkMode = currentTheme.brightness == Brightness.dark;
     final Size size = MediaQuery.of(context).size;
+
+    // ویجتی که در حالت لودینگ نمایش داده می‌شود (Shimmer یا FutureBuilder)
+    Widget loadingOrContentWidget;
+
+    if (_isLoading) {
+      // حالت اول: بارگذاری اولیه (قبل از تنظیم Future)
+      loadingOrContentWidget = _buildLoadingShimmer(size, isDarkMode);
+    } else {
+      // حالت دوم: استفاده از FutureBuilder برای فچ داده‌ها
+      loadingOrContentWidget = FutureBuilder<List<LocationCardModel>>(
+        future: futureLocationCards,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // حالت سوم: Future در حال بارگذاری است (API Call)
+            return _buildLoadingShimmer(size, isDarkMode); // ✅ نمایش Shimmer
+          } else if (snapshot.hasError) {
+            // نمایش خطا در صورت عدم موفقیت API call
+            return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: isDarkMode ? Colors.white : Colors.red)));
+          } else {
+            final locationCards = snapshot.data!;
+
+            // اگر داده‌ای وجود نداشته باشد، فقط دکمه افزودن را نشان دهیم
+            if (locationCards.isEmpty) {
+              return Center(
+                child: _buildAddCard(size, isDarkMode),
+              );
+            }
+
+            // نمایش لیست کارت‌ها + کارت افزودن
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              itemCount: locationCards.length + 1,
+              itemBuilder: (context, index) {
+                if (index < locationCards.length) {
+                  final locationCard = locationCards[index];
+                  return GestureDetector(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: size.height * 0.024,
+                          bottom: size.height * 0.034,
+                          right: size.width * 0.063,
+                          left: size.width * 0.031),
+                      child: Container(
+                        height: size.height * 0.256,
+                        width: size.width * 0.333,
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ?  const Color(0xFFBDFFBD).withOpacity(0.80)
+                              :  const Color(0xFF21DB2A).withOpacity(0.80),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(size.width * 0.042),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDarkMode
+                                  ?  const Color(0xFFBDFFBD).withOpacity(0.80)
+                                  :  const Color(0xFF21DB2A).withOpacity(0.80),
+                              offset: const Offset(0, 0),
+                              blurRadius: 20,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // ✅ اصلاح مسیر تصویر: استفاده از locationCard.location
+                            Image(
+                              image: AssetImage("images/locations/${locationCard.location}.png"),
+                              width: size.width * 0.333,
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    locationCard.name,
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: const Color(0xFF1D1A39),
+                                      fontFamily: "Sans",
+                                      fontSize: size.width * 0.040,
+                                    ),
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.count(locationCard.countOfProducts.toString()),
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: const Color(0xFF1D1A39),
+                                      fontFamily: "Sans",
+                                      fontSize: size.width * 0.025,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LocationPage(locationcard: locationCard),
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  // کارت آخر = کارت افزودن
+                  return _buildAddCard(size, isDarkMode);
+                }
+              },
+            );
+          }
+        },
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -453,17 +656,10 @@ class _HomePageState extends State<HomePage> {
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: isDarkMode
-                      ?  Colors.white // رنگ‌های تم تیره
+                      ?  Colors.white
                       :  Colors.black,
                   fontFamily: "Sans",
                   fontSize: size.width * 0.050,
-                  /*shadows: [
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: const Offset(4, 4),
-                      blurRadius: 20,
-                    ),
-                  ],*/
                 ),
               ),
             ],
@@ -473,147 +669,50 @@ class _HomePageState extends State<HomePage> {
         SizedBox(
           height: size.height * 0.314,
           width: size.width,
-          child: FutureBuilder<List<LocationCardModel>>(
-            future: futureLocationCards,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                final locationCards = snapshot.data!;
-
-                // یکی به طول لیست اضافه کنیم (برای کارت افزودن)
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  reverse: true,
-                  itemCount: locationCards.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < locationCards.length) {
-                      final locationCard = locationCards[index];
-                      return GestureDetector(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: size.height * 0.024,
-                              bottom: size.height * 0.034,
-                              right: size.width * 0.063,
-                              left: size.width * 0.031),
-                          child: Container(
-                            height: size.height * 0.256,
-                            width: size.width * 0.333,
-                            decoration: BoxDecoration(
-                              color: isDarkMode
-                                  ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
-                                  :  const Color(0xFF21DB2A).withOpacity(0.80),
-                              //color: ,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(size.width * 0.042),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: isDarkMode
-                                      ?  const Color(0xFFBDFFBD).withOpacity(0.80) // رنگ‌های تم تیره
-                                      :  const Color(0xFF21DB2A).withOpacity(0.80),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 20,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Image(
-                                  image: AssetImage("images/locations/${locationCard.location}.png"),
-                                  width: size.width * 0.333,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        locationCard.name,
-                                        textDirection: TextDirection.rtl,
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                          color: const Color(0xFF1D1A39),
-                                          fontFamily: "Sans",
-                                          fontSize: size.width * 0.040,
-                                        ),
-                                      ),
-                                      Text(
-                                        AppLocalizations.of(context)!.count(locationCard.countOfProducts.toString()),
-                                        textDirection: TextDirection.rtl,
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                          color: const Color(0xFF1D1A39),
-                                          fontFamily: "Sans",
-                                          fontSize: size.width * 0.025,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LocationPage(locationcard: locationCard),
-                            ),
-                          );
-                        },
-                      );
-                    } else {
-                      // کارت آخر = کارت افزودن
-                      return GestureDetector(
-                        onTap: () {
-                          // 👈 جایگزین کردن کل بلوک showModalBottomSheet
-                          BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
-                            'AddLocationOrProduct',
-                            params: {'mobileNumber': mobile},
-                            settings: const TnBottomSheetSettings(
-                              //isScrollControlled: true, // اگر می‌خواهید تمام صفحه را بگیرد
-                              isDismisable: true,
-                            ),
-                          );
-                        }, // همون متدی که نوشتی
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: size.height * 0.024,
-                              bottom: size.height * 0.034,
-                              right: size.width * 0.063,
-                              left: size.width * 0.031),
-                          child: Container(
-                            height: size.height * 0.256,
-                            width: size.width * 0.333,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2), // محو
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(size.width * 0.042),
-                              ),
-                              border: Border.all(color: Colors.white54, width: 2),
-                            ),
-                            child: Center(
-                              child: Icon(Icons.add, color: isDarkMode
-                                  ?  Colors.white // رنگ‌های تم تیره
-                                  :  Colors.black, size: 48),
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                );
-              }
-            },
-          ),
+          child: loadingOrContentWidget, // ✅ نمایش Shimmer یا محتوای اصلی
         ),
       ],
     );
   }
+
+  // ویجت کمکی برای ساخت کارت افزودن (کارت آخر در لیست)
+  Widget _buildAddCard(Size size, bool isDarkMode) {
+    return GestureDetector(
+      onTap: () {
+        BuildContextTnBottomSheetNav(context).showTnBottomSheetNav(
+          'AddLocationOrProduct',
+          params: {'mobileNumber': mobile},
+          settings: const TnBottomSheetSettings(
+            isDismisable: true,
+          ),
+        );
+      },
+      child: Padding(
+        padding: EdgeInsets.only(
+            top: size.height * 0.024,
+            bottom: size.height * 0.034,
+            right: size.width * 0.063,
+            left: size.width * 0.031),
+        child: Container(
+          height: size.height * 0.256,
+          width: size.width * 0.333,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.all(
+              Radius.circular(size.width * 0.042),
+            ),
+            border: Border.all(color: Colors.white54, width: 2),
+          ),
+          child: Center(
+            child: Icon(Icons.add, color: isDarkMode
+                ?  Colors.white
+                :  Colors.black, size: 48),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildModuleType({required String title, required String icon}) {
     final currentTheme = Theme.of(context);
@@ -627,7 +726,7 @@ class _HomePageState extends State<HomePage> {
             title,
             textAlign: TextAlign.start,
             style: TextStyle(color: isDarkMode
-                ?  Colors.white // رنگ‌های تم تیره
+                ?  Colors.white
                 :  Colors.black, fontSize: 14),
           ),
           const SizedBox(height: 8),

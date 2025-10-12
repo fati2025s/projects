@@ -312,4 +312,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get nemidanam => 'لیست ماژول های روشنایی';
+
+  @override
+  String get doncoler => 'ماژول کولر موجود نمی باشد';
 }

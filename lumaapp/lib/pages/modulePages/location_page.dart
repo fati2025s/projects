@@ -3,6 +3,7 @@ import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:group_button/group_button.dart';
 import 'package:lumaapp/pages/mainPages/home_page.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_sheet_navigator_extension.dart';
 import '../../widgets/slider_widget.dart';
@@ -112,7 +113,32 @@ class LumcyModule {
   }
 }
 
-Future<lumakeyModulesss> fetchlumakeyModulessss(int locationId) async {
+class ShimmerPlaceholder extends StatelessWidget {
+  final double width;
+  final double height;
+  final double radius;
+
+  const ShimmerPlaceholder({
+    super.key,
+    required this.width,
+    required this.height,
+    this.radius = 8.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white, // رنگ Placeholder در حالت Shimmer
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+}
+
+Future<lumakeyModulesss?> fetchlumakeyModulessss(int locationId) async {
   final response = await http.get(
     Uri.parse('${utils.serverAddress}/products/lumakey/generics?location=$locationId'),
     headers: {
@@ -124,7 +150,7 @@ Future<lumakeyModulesss> fetchlumakeyModulessss(int locationId) async {
     if (data.isNotEmpty) {
       return lumakeyModulesss.fromJson(data.first); // فقط ماژول اول را برمی‌گردانیم
     } else {
-      throw Exception('No lumakey module found for this location');
+      return null;
     }
   } else {
     throw Exception('Failed to load lumakey module');
@@ -167,7 +193,7 @@ class _LocationPageState extends State<LocationPage> {
   late PageController _pageController;
   late List<bool> isSelected = [false, false, false, false];
   bool on_off = true;
-  late Future<lumakeyModulesss> futurelumakeyModulessss;
+  late Future<lumakeyModulesss?> futurelumakeyModulessss;
   late Future<List<LumcyModule>> futureLumcyModules;
 
   @override
@@ -580,6 +606,105 @@ class _LocationPageState extends State<LocationPage> {
     }
   }
 
+  Widget _buildShimmerLine(Size size, bool isDarkMode, double widthFactor, double height) {
+    return Container(
+      width: size.width * widthFactor,
+      height: height,
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.white24 : Colors.grey[300],
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+    );
+  }
+
+  Widget _buildModuleDetailsShimmer(Size size, bool isDarkMode) {
+    final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+    final highlightColor = isDarkMode ? Colors.grey[600]! : Colors.grey[100]!;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.042),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Placeholder برای هدر (دما یا لوکیشن)
+              Padding(
+                padding: EdgeInsets.only(right: size.width * 0.03),
+                child: _buildShimmerLine(size, isDarkMode, 0.50, 20.0),
+              ),
+              SizedBox(height: size.height * 0.05),
+
+              // Placeholder برای ناحیه اسلایدر
+              Center(
+                child: Container(
+                  height: 80, // ارتفاع تقریبی اسلایدر
+                  width: size.width * 0.9,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.white12 : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: size.height * 0.01),
+
+              // Placeholder برای باکس کنترل‌های اصلی
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.05,
+                  horizontal: size.width * 0.010,
+                ),
+                child: Container(
+                  height: size.height * 0.4, // ارتفاع تقریبی کانتینر کنترلی
+                  width: size.width * 0.95,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.white12 : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: size.width * 0.063,
+                      horizontal: size.width * 0.063,
+                    ),
+                    child: Column(
+                      children: [
+                        // Placeholder برای متن Slug
+                        _buildShimmerLine(size, isDarkMode, 0.40, 14.0),
+                        SizedBox(height: size.height * 0.015),
+
+                        // Placeholder برای ردیف اول دکمه‌ها (NF/N)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildShimmerLine(size, isDarkMode, 0.35, size.height * 0.050),
+                            _buildShimmerLine(size, isDarkMode, 0.35, size.height * 0.050),
+                          ],
+                        ),
+                        SizedBox(height: size.height * 0.010),
+
+                        // Placeholder برای ردیف دوم دکمه‌ها (AUTO/F)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildShimmerLine(size, isDarkMode, 0.35, size.height * 0.050),
+                            _buildShimmerLine(size, isDarkMode, 0.35, size.height * 0.050),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -669,11 +794,11 @@ class _LocationPageState extends State<LocationPage> {
                       children: [
                         SizedBox(height: size.height * 0.029),
                         Expanded(
-                          child: FutureBuilder<lumakeyModulesss>(
+                          child: FutureBuilder<lumakeyModulesss?>(
                             future: futurelumakeyModulessss,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(child: CircularProgressIndicator());
+                                return _buildModuleDetailsShimmer(size, isDarkMode);
                               }
                               if (snapshot.hasError) {
                                 return Center(
@@ -683,7 +808,392 @@ class _LocationPageState extends State<LocationPage> {
                                     )
                                 );
                               }
-                                if (snapshot.data != null) {
+                              if (snapshot.data == null) {
+                                return SingleChildScrollView(
+                                  //padding: EdgeInsets.only(top: size.height * 0), // اضافه کردن فاصله از بالا
+                                  child: Column(
+                                    children: [// برای مرکز قرارگیری افقی
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 120),
+                                      decoration: BoxDecoration(
+                                        color: isDarkMode
+                                            ?const Color(0xFFBDFFBD).withOpacity(0.8)
+                                            :const Color(0xFF21DB2A).withOpacity(0.80),
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.green.withOpacity(0.5),
+                                            offset: const Offset(0, 0),
+                                            blurRadius: 20,
+                                          )
+                                        ],
+                                      ),
+                                      child: Text(
+                                        s.doncoler,
+                                        style: TextStyle(color: Color(0xFF1D1A39), fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                      SizedBox(height: 30),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: isDarkMode
+                                                ?const Color(0xFFBDFFBD).withOpacity(0.8)
+                                                :const Color(0xFF21DB2A).withOpacity(0.80),
+                                            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.green.withOpacity(0.15),
+                                                offset: const Offset(0, -4),
+                                                blurRadius: 20,
+                                                spreadRadius: 10,
+                                              )
+                                            ]
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.only(top: size.height * 0.030),
+                                          child: Column(
+                                            children: [
+                                              // List Title (Fixed height, non-scrollable part)
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: size.width * 0.063),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  textDirection: TextDirection.rtl,
+                                                  children: [
+                                                    Text(
+                                                      s.nemidanam,
+                                                      textDirection: TextDirection.rtl,
+                                                      textAlign: TextAlign.right,
+                                                      style: TextStyle(
+                                                        color: Color(0xFF1D1A39),
+                                                        fontFamily: "Sans",
+                                                        fontSize: 18, // Fixed size for better readability
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(height: size.height * 0.005),
+
+                                              // Expanded FutureBuilder + ListView (The scrollable part)
+                                              FutureBuilder<List<LumcyModule>>(
+                                                  future: futureLumcyModules,
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                                      return const Center(child: CircularProgressIndicator(color: Color(0xFF030585)));
+                                                    } else if (snapshot.hasError) {
+                                                      return Center(child: Text('Error: ${snapshot.error}'));
+                                                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                                      return Center(child: Text(s.error20));
+                                                    }
+                                                    final lumcyModules = snapshot.data!;
+                                                    // The ListView.builder is now correctly constrained by Expanded
+                                                    return ListView.builder(
+                                                      shrinkWrap: true, // فقط به اندازه محتوای خود فضا اشغال کند
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      itemCount: lumcyModules.length,
+                                                      itemBuilder: (context, index) {
+                                                        final lumcyModule = lumcyModules[index];
+                                                        return Padding(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical: size.height * 0.015,
+                                                            horizontal: size.width * 0.05,
+                                                          ),
+                                                          child: Container(
+                                                            width: size.width * 0.1,
+                                                            decoration: BoxDecoration(
+                                                              color: isDarkMode
+                                                                  ?const Color(0xFFBDFFBD).withOpacity(0.8)
+                                                                  :const Color(0xFF21DB2A).withOpacity(0.80),
+                                                              borderRadius: BorderRadius.circular(20),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: const Color(0xFF030585).withOpacity(0.8),
+                                                                  offset: const Offset(0, 0),
+                                                                  blurRadius: 20,
+                                                                )
+                                                              ],
+                                                            ),
+                                                            child: Padding(
+                                                              padding: EdgeInsets.symmetric(
+                                                                vertical: size.width * 0.063,
+                                                                horizontal: size.width * 0.063,
+                                                              ),
+                                                              child: Row(
+                                                                textDirection: TextDirection.ltr,
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                                    textDirection: TextDirection.ltr,
+                                                                    children: [
+                                                                      Text(
+                                                                        s.nor(lumcyModule.slug.replaceAll('0', '').padRight(2, '#')),
+                                                                        textDirection: TextDirection.rtl,
+                                                                        textAlign: TextAlign.right,
+                                                                        style: TextStyle(
+                                                                          color: const Color(0xFF1D1A39),
+                                                                          fontFamily: "Sans",
+                                                                          fontSize: size.width * 0.029,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(width: size.width * 0.03),
+                                                                  // --- Module Controls (Left Side) ---
+                                                                  Column(
+                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
+                                                                      Opacity(
+                                                                        opacity: (lumcyModule.mode == 'NF') ? 1 : 0.75,
+                                                                        child: GestureDetector(
+                                                                          child: Container(
+                                                                            width: size.width * 0.27,
+                                                                            height: size.height * 0.05,
+                                                                            decoration: BoxDecoration(
+                                                                              gradient: const LinearGradient(
+                                                                                  colors: [Color(0xFF030585), Color(0xFF272AF5)]),
+                                                                              borderRadius: BorderRadius.circular(size.width * 0.083),
+                                                                              border: Border.all(color: const Color(0xFF215426), width: 1),
+                                                                            ),
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                textDirection: TextDirection.rtl,
+                                                                                textAlign: TextAlign.center,
+                                                                                s.onoff,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: size.width * 0.025,
+                                                                                  fontFamily: "Sans",
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          onTap: () => (lumcyModule.mode != 'NF')
+                                                                              ? toggleModeLumcyModule(lumcyModule, 'NF')
+                                                                              : null,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(height: size.height * 0.010),
+                                                                      Opacity(
+                                                                        opacity: (lumcyModule.mode == 'N') ? 1 : 0.75,
+                                                                        child: GestureDetector(
+                                                                          child: Container(
+                                                                            width: size.width * 0.27,
+                                                                            height: size.height * 0.05,
+                                                                            decoration: BoxDecoration(
+                                                                              gradient: const LinearGradient(
+                                                                                  colors: [Color(0xFF030585), Color(0xFF272AF5)]),
+                                                                              borderRadius: BorderRadius.circular(size.width * 0.083),
+                                                                              border: Border.all(color: const Color(0xFF215426), width: 1),
+                                                                            ),
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                textDirection: TextDirection.rtl,
+                                                                                textAlign: TextAlign.center,
+                                                                                s.on,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: size.width * 0.025,
+                                                                                  fontFamily: "Sans",
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          onTap: () => (lumcyModule.mode != 'N')
+                                                                              ? toggleModeLumcyModule(lumcyModule, 'N')
+                                                                              : null,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(height: size.height * 0.010),
+                                                                      Opacity(
+                                                                        opacity: (lumcyModule.mode == 'F') ? 1 : 0.75,
+                                                                        child: GestureDetector(
+                                                                          child: Container(
+                                                                            width: size.width * 0.27,
+                                                                            height: size.height * 0.05,
+                                                                            decoration: BoxDecoration(
+                                                                              gradient: const LinearGradient(
+                                                                                  colors: [Color(0xFF030585), Color(0xFF272AF5)]),
+                                                                              borderRadius: BorderRadius.circular(size.width * 0.083),
+                                                                              border: Border.all(color: const Color(0xFF215426), width: 1),
+                                                                            ),
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                textDirection: TextDirection.rtl,
+                                                                                textAlign: TextAlign.center,
+                                                                                s.off,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: size.width * 0.025,
+                                                                                  fontFamily: "Sans",
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          onTap: () => (lumcyModule.mode != 'F')
+                                                                              ? toggleModeLumcyModule(lumcyModule, 'F')
+                                                                              : null,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+
+                                                                  // --- Lamp Grid or AP Mode Button (Right Side) ---
+                                                                  (lumcyModule.mode != 'F')
+                                                                      ? SizedBox(
+                                                                    // Dynamically adjust height based on number of lamps
+                                                                    height: (lumcyModule.is_turn_lamp_3 == null && lumcyModule.is_turn_lamp_4 == null)
+                                                                        ? size.width * 0.180 // Smaller height for 2 lamps
+                                                                        : size.width * 0.300, // Full height for 3/4 lamps
+                                                                    width: size.width * 0.250,
+                                                                    child: GridView.count(
+                                                                      crossAxisCount: 2,
+                                                                      mainAxisSpacing: 10,
+                                                                      crossAxisSpacing: 10,
+                                                                      physics: const NeverScrollableScrollPhysics(), // Important to prevent inner scrolling
+                                                                      children: [
+                                                                        if (lumcyModule.is_turn_lamp_1 != null)
+                                                                          GestureDetector(
+                                                                            child: Container(
+                                                                              decoration: BoxDecoration(boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: Color((lumcyModule.is_turn_lamp_1!)
+                                                                                      ? 0xFF48A23D
+                                                                                      : 0xFFE72535)
+                                                                                      .withOpacity(0.4),
+                                                                                  offset: const Offset(0, 0),
+                                                                                  blurRadius: 20,
+                                                                                  spreadRadius: 2,
+                                                                                ),
+                                                                              ]),
+                                                                              child: Image(
+                                                                                  image: AssetImage((lumcyModule.is_turn_lamp_1!)
+                                                                                      ? 'images/modules/TurnOn.png'
+                                                                                      : 'images/modules/Shutdown.png')),
+                                                                            ),
+                                                                            onTap: () => toggleIsTurnLamp1LumcyModule(lumcyModule),
+                                                                          ),
+                                                                        if (lumcyModule.is_turn_lamp_2 != null)
+                                                                          GestureDetector(
+                                                                            child: Container(
+                                                                              decoration: BoxDecoration(boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: Color((lumcyModule.is_turn_lamp_2!)
+                                                                                      ? 0xFF48A23D
+                                                                                      : 0xFFE72535)
+                                                                                      .withOpacity(0.4),
+                                                                                  offset: const Offset(0, 0),
+                                                                                  blurRadius: 20,
+                                                                                  spreadRadius: 2,
+                                                                                ),
+                                                                              ]),
+                                                                              child: Image(
+                                                                                  image: AssetImage((lumcyModule.is_turn_lamp_2!)
+                                                                                      ? 'images/modules/TurnOn.png'
+                                                                                      : 'images/modules/Shutdown.png')),
+                                                                            ),
+                                                                            onTap: () => toggleIsTurnLamp2LumcyModule(lumcyModule),
+                                                                          ),
+                                                                        if (lumcyModule.is_turn_lamp_3 != null)
+                                                                          GestureDetector(
+                                                                            child: Container(
+                                                                              decoration: BoxDecoration(boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: Color((lumcyModule.is_turn_lamp_3!)
+                                                                                      ? 0xFF48A23D
+                                                                                      : 0xFFE72535)
+                                                                                      .withOpacity(0.4),
+                                                                                  offset: const Offset(0, 0),
+                                                                                  blurRadius: 20,
+                                                                                  spreadRadius: 2,
+                                                                                ),
+                                                                              ]),
+                                                                              child: Image(
+                                                                                  image: AssetImage((lumcyModule.is_turn_lamp_3!)
+                                                                                      ? 'images/modules/TurnOn.png'
+                                                                                      : 'images/modules/Shutdown.png')),
+                                                                            ),
+                                                                            onTap: () => toggleIsTurnLamp3LumcyModule(lumcyModule),
+                                                                          ),
+                                                                        if (lumcyModule.is_turn_lamp_4 != null)
+                                                                          GestureDetector(
+                                                                            child: Container(
+                                                                              decoration: BoxDecoration(boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: Color((lumcyModule.is_turn_lamp_4!)
+                                                                                      ? 0xFF48A23D
+                                                                                      : 0xFFE72535)
+                                                                                      .withOpacity(0.4),
+                                                                                  offset: const Offset(0, 0),
+                                                                                  blurRadius: 20,
+                                                                                  spreadRadius: 2,
+                                                                                ),
+                                                                              ]),
+                                                                              child: Image(
+                                                                                  image: AssetImage((lumcyModule.is_turn_lamp_4!)
+                                                                                      ? 'images/modules/TurnOn.png'
+                                                                                      : 'images/modules/Shutdown.png')),
+                                                                            ),
+                                                                            onTap: () => toggleIsTurnLamp4LumcyModule(lumcyModule),
+                                                                          ),
+                                                                      ],
+                                                                    ),
+                                                                  )
+                                                                      : SizedBox(
+                                                                    height: size.width * 0.300,
+                                                                    width: size.width * 0.300,
+                                                                    child: Center(
+                                                                      child: Opacity(
+                                                                        opacity: (lumcyModule.is_ap_mode) ? 1 : 0.75,
+                                                                        child: GestureDetector(
+                                                                          onTap: () => toggleIsApModeLumcyModule(lumcyModule),
+                                                                          child: Container(
+                                                                            width: size.width * 0.250,
+                                                                            height: size.height * 0.040,
+                                                                            decoration: BoxDecoration(
+                                                                              gradient: const LinearGradient(
+                                                                                  colors: [Color(0xFF030585), Color(0xFF272AF5)]),
+                                                                              borderRadius: BorderRadius.circular(size.width * 0.083),
+                                                                              border: Border.all(
+                                                                                  color: const Color(0xFF215426), width: 1),
+                                                                            ),
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                s.mod,
+                                                                                textDirection: TextDirection.rtl,
+                                                                                textAlign: TextAlign.center,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: size.width * 0.025,
+                                                                                  fontFamily: "Sans",
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  }
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                );
+                              }
                                   final lumakeyModuless = snapshot.data!;
                                   return SingleChildScrollView(
                                    child: Column(
@@ -1936,18 +2446,6 @@ class _LocationPageState extends State<LocationPage> {
                                     ],
                                     ),
                                   );
-                                } else {
-                                  return Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!.dontexit,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  );
-                                }
                             },
                           ),
                         ),

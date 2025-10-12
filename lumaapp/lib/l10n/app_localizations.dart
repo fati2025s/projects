@@ -664,6 +664,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List of lighting modules'**
   String get nemidanam;
+
+  /// No description provided for @doncoler.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooler module is not available'**
+  String get doncoler;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
